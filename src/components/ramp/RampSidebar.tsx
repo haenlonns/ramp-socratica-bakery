@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { NavItem } from "@/lib/ramp/types";
 import { activeTeam } from "@/lib/ramp/config";
+import { markSheetOpened } from "@/lib/use-sheet-param";
 import { RampIcon } from "./RampIcon";
 import { useRampConfig } from "./RampConfigProvider";
 
@@ -64,6 +65,8 @@ export function RampSidebar({ items }: { items: NavItem[] }) {
               <li key={item.id}>
                 <Link
                   href={item.href}
+                  scroll={false}
+                  onClick={item.href.includes("?") ? markSheetOpened : undefined}
                   className={active ? "rampNavItem rampNavItem--active" : "rampNavItem"}
                   aria-current={active ? "page" : undefined}
                 >

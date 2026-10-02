@@ -1,94 +1,4 @@
-/* ===================================================================
-   Socratica Store — its own identity, separate from the bakery
-   storefront and the Ramp simulator.
-   Tokens from nodes 2:68581 and 128:3191.
-   =================================================================== */
-
-@font-face {
-  font-family: "5by7";
-  src: url("/store/fonts/5by7-regular.ttf") format("truetype");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "5by7";
-  src: url("/store/fonts/5by7-bold.ttf") format("truetype");
-  font-weight: 700;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TWK Lausanne";
-  src: url("/ramp/fonts/twk-lausanne-300.ttf") format("truetype");
-  font-weight: 300;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "TWK Lausanne";
-  src: url("/ramp/fonts/twk-lausanne-400.ttf") format("truetype");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Untitled Sans";
-  src: url("/store/fonts/UntitledSans-Regular.otf") format("opentype");
-  font-weight: 400;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Untitled Sans";
-  src: url("/store/fonts/UntitledSans-Medium.otf") format("opentype");
-  font-weight: 500;
-  font-display: swap;
-}
-
-:root {
-  --store-ink: #131313;
-  --store-body: #41403f;
-  --store-mute: #a09d98;
-  --store-dark: #2a2928;
-  --store-cream: #f5f1e2;
-  --store-line: rgba(207, 204, 196, 0.32);
-  --store-blue: #2c64b7;
-  --store-blue-soft: rgba(188, 209, 241, 0.32);
-  --store-blue-line: #e8ecf2;
-
-  /* Single vertical rhythm: distance from the header to page content.
-     Figma varies this per page (62–242px); one value keeps the store
-     feeling like one site. */
-  --store-content-top: 64px;
-}
-
-/* ===================================================================
-   Type scale — the only font pairings the store uses.
-   Every rule below references one of these; no ad-hoc sizes.
-   `font` shorthand is weight / size / line-height / family.
-   =================================================================== */
-
-:root {
-  /* 5by7 — chrome and product titles */
-  --t-display: 700 30px/1.4 "5by7", monospace;
-  --t-card: 700 18px/1.4 "5by7", monospace;
-  --t-pixel-label: 400 16px/1 "5by7", monospace;
-  --t-chip: 700 10px/0.7 "5by7", monospace;
-
-  /* TWK Lausanne — page headings */
-  --t-heading: 400 26.8px/32px "TWK Lausanne", sans-serif;
-
-  /* Untitled Sans — everything else */
-  --t-emphasis: 500 20px/1.4 "Untitled Sans", sans-serif;
-  --t-title: 500 18px/1.4 "Untitled Sans", sans-serif;
-  --t-label: 500 16px/1.4 "Untitled Sans", sans-serif;
-  --t-body: 400 16px/1.4 "Untitled Sans", sans-serif;
-  --t-small: 400 14px/1.4 "Untitled Sans", sans-serif;
-  --t-small-strong: 500 14px/1.4 "Untitled Sans", sans-serif;
-  --t-caption: 400 12px/1.4 "Untitled Sans", sans-serif;
-  --t-pixel-caption: 700 12px/1.4 "5by7", monospace;
-}
+/* Socratica Store rules. Tokens and fonts live in src/styles/tokens.css. */
 
 * { box-sizing: border-box; }
 
@@ -96,7 +6,7 @@ body {
   margin: 0;
   background: #fff;
   color: var(--store-body);
-  font-family: "Untitled Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -111,7 +21,10 @@ body {
 .storeHeader {
   width: 1054px;
   max-width: calc(100% - 48px);
+  height: 23px;
   margin: 56px auto 0;
+  position: relative;
+  z-index: 110; /* above the sheet, as in the Figma product frame */
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
@@ -158,6 +71,9 @@ body {
   letter-spacing: 1px;
   text-transform: uppercase;
 }
+.storeCart--bump { animation: chipBump 240ms var(--ease-out); }
+@keyframes chipBump { 40% { transform: scale(1.14); } }
+@media (prefers-reduced-motion: reduce) { .storeCart--bump { animation: none; } }
 
 /* Page body -------------------------------------------------------- */
 
@@ -186,78 +102,6 @@ body {
   letter-spacing: -0.16px;
   color: var(--store-body);
 }
-
-.storeButton {
-  font: var(--t-label);
-  margin-top: 24px;
-  padding: 14px 24px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--store-blue-line);
-  border-radius: 24px;
-  background: var(--store-blue-soft);
-  color: var(--store-blue);
-  letter-spacing: -0.32px;
-  text-decoration: none;
-  transition: background-color 140ms ease;
-}
-
-.storeButton:hover { background: rgba(188, 209, 241, 0.5); }
-
-/* About page tuning: values locked in from the old dev sliders. */
-.storeMain--about .storeBody { font-size: var(--about-subtitle-size, 16px); }
-.storeMain--about .storeButton {
-  padding: var(--about-button-py, 8px) var(--about-button-px, 24px);
-}
-.storeMain--about .storeStep { border-radius: var(--about-card-radius, 14px); }
-
-/* How it works ----------------------------------------------------- */
-
-.storeSteps {
-  list-style: none;
-  margin: 60px 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 32px;
-}
-
-.storeStep {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--store-line);
-  border-radius: 4px;
-  overflow: hidden;
-  background: #fdfcf8;
-}
-
-.storeStepArt {
-  display: block;
-  aspect-ratio: 333 / 245;
-  overflow: hidden;
-}
-
-/* The export carries bleed below the frame, so anchor to the top and crop. */
-.storeStepArt img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top; }
-/* The PNGs also bake in a pale 1px edge, rounded corners, and a cream band
-   from y≈242; scale up from the center so the box clips all four edges. */
-.storeStepArt img { transform: scale(1.06); transform-origin: center; }
-
-/* Grain canvas (see Grain.tsx) fills whichever image frame holds it. */
-.grain {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  image-rendering: pixelated;
-}
-.storeStepArt, .storeScene, .shopDetailArt { position: relative; }
-
-/* Transparent cutout with grain masked to its shape (GrainImage.tsx). */
-.grainImage { position: relative; display: block; }
-.grainImage img { width: 100%; height: 100%; display: block; object-fit: contain; }
 
 /* Dev-only slider panel --------------------------------------------- */
 .storeTuner {
@@ -288,94 +132,64 @@ body {
 }
 .storeTunerFoot button:hover { background: rgba(255, 255, 255, 0.28); }
 
-
-.storeStepHead { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; padding: 0 28px; }
-
-.storeStepNumber {
-  font: var(--t-label);
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--store-cream);
-  color: var(--store-body);
-}
-
-.storeStepTitle {
-  font: var(--t-title); letter-spacing: -0.36px; color: var(--store-ink); }
-
-.storeStepBody {
-  font: var(--t-body);
-  margin: 12px 0 0;
-  padding: 0 28px 28px;
-  max-width: 289px;
-  letter-spacing: -0.16px;
-  color: var(--store-body);
-}
-
 /* Market ----------------------------------------------------------- */
 
-.storeAreas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 40px; }
+.storeMain--market { padding-top: 152px; }
+.marketSelector { margin-top: 40px; width: 1015px; max-width: 100%; display: flex; flex-direction: column; gap: 40px; }
 
-.storeArea {
-  display: block;
-  padding: 12px;
-  border: 1px solid var(--store-line);
-  border-radius: 4px;
-  text-decoration: none;
-  transition: border-color 140ms ease, background-color 140ms ease;
-}
+.marketCards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 
-.storeArea:hover { border-color: rgba(207, 204, 196, 0.8); background: rgba(245, 241, 226, 0.3); }
-
-.storeAreaHead { display: flex; align-items: center; gap: 2px; }
-.storeAreaName {
-  font: var(--t-title); letter-spacing: -0.36px; color: var(--store-body); }
-.storeCaret { width: 20px; height: 20px; display: block; }
-
-.storeAreaBlurb {
-  font: var(--t-body);
-  display: block;
-  margin-top: 8px;
-  letter-spacing: -0.16px;
-  color: var(--store-body);
-}
-
-.storeScene {
-  margin-top: 40px;
+/* Scene: stacked sky gradients crossfade per active section. */
+.marketScene {
+  position: relative;
+  overflow: hidden;
   border: 1px solid var(--store-cream);
   border-radius: 12px;
-  overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(100, 154, 234, 0.32) 0%, rgba(184, 192, 190, 0.32) 100%),
-    linear-gradient(90deg, rgba(251, 248, 239, 0.24) 0%, rgba(251, 248, 239, 0.24) 100%);
+  background: linear-gradient(90deg, rgba(251, 248, 239, 0.24), rgba(251, 248, 239, 0.24));
 }
 
-.storeScene img { width: 100%; height: auto; display: block; }
+.marketSky { position: absolute; inset: 0; opacity: 0; transition: opacity 220ms var(--ease-out); }
+.marketSky--base { opacity: 1; background: linear-gradient(180deg, rgba(100, 154, 234, 0.32) 0%, rgba(184, 192, 190, 0.32) 100%); }
+.marketSky--aisle { background: linear-gradient(180deg, rgba(100, 154, 234, 0.32) 0%, color-mix(in srgb, var(--section-aisle-line) 32%, transparent) 100%); }
+.marketSky--fruits { background: linear-gradient(180deg, rgba(100, 154, 234, 0.32) 0%, color-mix(in srgb, var(--section-fruits-line) 32%, transparent) 100%); }
+.marketSky--fridge { background: linear-gradient(180deg, rgba(100, 154, 234, 0.32) 0%, color-mix(in srgb, var(--section-fridge-line) 32%, transparent) 100%); }
+.marketScene[data-active="aisle"] .marketSky--aisle,
+.marketScene[data-active="fruits"] .marketSky--fruits,
+.marketScene[data-active="fridge"] .marketSky--fridge { opacity: 1; }
+.marketScene:not([data-active="none"]) .marketSky--base { opacity: 0; }
 
-/* Market page tuning: tuned values. */
-.storeMain--market .storeBody { font-size: var(--market-subtitle-size, 16px); }
-.storeMain--market .storeAreas {
-  margin-top: var(--market-areas-gap, 40px);
-  gap: var(--market-card-gap, 16px);
+.marketPiece, .marketItem, .marketPost, .marketHighlight, .marketRegion, .marketChef { position: absolute; display: block; }
+.marketPost { background: #682224; }
+.marketItem { transition: transform 160ms var(--ease-out); }
+
+.marketHighlight {
+  border: 3px dashed var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--line) 28%, transparent);
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
 }
-.storeMain--market .storeArea {
-  padding: var(--market-card-pad-y, 14px) var(--market-card-pad-x, 16px);
-  border-radius: var(--market-card-radius, 4px);
-}
-.storeMain--market .storeScene { border-radius: var(--market-scene-radius, 12px); }
-.storeMain--market .storeAreaBlurb { margin-top: var(--market-blurb-gap, 6px); }
-/* The scene PNG carries its own outline; zoom so the frame clips it. */
-.storeMain--market .storeScene img {
-  transform: scale(var(--market-scene-zoom, 1.04));
-  transform-origin: center;
+.marketHighlight[data-on="true"] { opacity: 1; }
+.marketHighlight--aisle { --line: var(--section-aisle-line); }
+.marketHighlight--fruits { --line: var(--section-fruits-line); }
+.marketHighlight--fridge { --line: var(--section-fridge-line); }
+
+.marketAwning { position: absolute; inset: 0; transition: transform 220ms var(--ease-out); }
+.marketScene:not([data-active="none"]) .marketAwning { transform: translateY(-24px); }
+
+.marketChef { left: 605.35px; top: 202.14px; width: 434.018px; height: 391.517px; display: flex; align-items: center; justify-content: center; }
+.marketChef img { transform: rotate(21.9deg); }
+
+.marketRegion { z-index: 2; cursor: pointer; border-radius: 20px; }
+.marketRegion:active { transform: scale(0.995); }
+
+@media (prefers-reduced-motion: reduce) {
+  .marketSky, .marketHighlight, .marketAwning, .marketItem { transition: none; }
 }
 
 @media (max-width: 900px) {
   .storeMain { padding-top: var(--store-content-top); }
-  .storeSteps, .storeAreas { grid-template-columns: 1fr; }
+  .marketCards { grid-template-columns: 1fr; }
   .storeTagline { display: none; }
 }
 
@@ -395,11 +209,10 @@ body {
 }
 
 .shopHeading p {
-  font: var(--t-body);
-  font-size: var(--gallery-subtitle-size, 16px);
+  font: var(--t-body-lg);
   margin: 0;
   max-width: 462px;
-  letter-spacing: -0.16px;
+  letter-spacing: -0.18px;
   color: var(--store-body);
 }
 
@@ -416,14 +229,14 @@ body {
 .shopVisit { display: flex; align-items: center; gap: var(--gallery-pill-gap, 16px); }
 
 .shopVisitLabel {
-  font: 400 var(--gallery-subtitle-size, 16px)/1 "Untitled Sans", sans-serif;
-  letter-spacing: -0.16px;
+  font: var(--t-body-lg);
+  line-height: 1;
+  letter-spacing: -0.36px;
   color: var(--store-body);
 }
 
 .shopPill {
   font: var(--t-body);
-  font-size: var(--gallery-subtitle-size, 16px);
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -455,20 +268,28 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gallery-grid-gap, 32.5px);
-  margin-top: var(--gallery-grid-top, 29px);
+  margin-top: var(--gallery-grid-top, 41px);
 }
 
-.shopCard { display: flex; flex-direction: column; }
+/* The whole card is one link that opens the product sheet. */
+.shopCard {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 160ms var(--ease-out), filter 160ms var(--ease-out);
+}
+.shopCard:hover { transform: translateY(-3px); }
+.shopCard:active { transform: translateY(-1px) scale(0.985); }
+.shopCard:focus-visible { outline: 2px solid var(--store-blue); outline-offset: 3px; border-radius: var(--gallery-card-radius, 12px); }
 
 .shopCardArt {
   display: block;
   width: 100%;
   aspect-ratio: 317.304 / 242.046;
-  padding: 0;
   border: 1.017px solid var(--store-cream);
   border-radius: var(--gallery-card-radius, 12px) var(--gallery-card-radius, 12px) 0 0;
   background: linear-gradient(180deg, var(--area-accent, #fbf8ef) 53%, rgba(188, 209, 241, 0.55) 100%);
-  cursor: pointer;
   overflow: hidden;
   position: relative;
 }
@@ -481,10 +302,9 @@ body {
   height: 63.45%;
   object-fit: contain;
   scale: var(--gallery-product-scale, 1);
-  transition: transform 160ms ease;
+  transition: transform 160ms var(--ease-out);
 }
-
-.shopCardArt:hover img { transform: scale(1.04); }
+.shopCard:hover .shopCardArt img { transform: scale(1.04); }
 
 .shopCardInfo {
   display: flex;
@@ -498,17 +318,17 @@ body {
   border-radius: 0 0 var(--gallery-card-radius, 12px) var(--gallery-card-radius, 12px);
 }
 
-.shopCardText { display: flex; flex-direction: column; gap: 2.034px; min-width: 0; }
+.shopCardText { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
 .shopCardName {
-  font: var(--t-card);
+  font: var(--t-title);
   margin: 0;
-  letter-spacing: -0.2766px;
+  letter-spacing: -0.36px;
   color: var(--store-ink);
 }
 
 .shopCardDesc {
-  font: var(--t-caption);
+  font: var(--t-small);
   margin: 0;
   /* Always exactly two lines tall so every card matches; extra text is cut. */
   height: 2.8em;
@@ -516,47 +336,13 @@ body {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow: hidden;
-  letter-spacing: -0.0814px;
+  letter-spacing: -0.14px;
   color: var(--store-body);
 }
-.shopPrice,
-.shopDetailPrice {
-  font: var(--t-small);
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 27.283px;
-  padding: 9.023px 11.601px 9.023px 10.312px;
-  border: 0;
-  border-radius: 15.468px;
-  background: var(--area-accent, #f4f0fa);
-  color: var(--area-accent-dark, var(--store-ink));
-  font: inherit;
-  font-family: "Untitled Sans", sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: -0.2578px;
-  cursor: pointer;
-  transition: filter 140ms ease;
-}
 
-.shopPrice:hover { filter: brightness(0.96); }
-.shopPrice:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
-.shopCard--soldOut { filter: grayscale(1); opacity: .62; }
-.shopCard--soldOut .shopCardArt:hover img { transform: none; }
-.shopCard--soldOut .shopPrice:disabled { opacity: 1; background: #e9e6e4; color: #6e6a68; }
-
-.shopDetailPrice {
-  /* Same badge as the gallery, scaled up for the larger page. */
-  --k: 1.5;
-  cursor: default;
-  height: calc(27.283px * var(--k));
-  padding: calc(9.023px * var(--k)) calc(11.601px * var(--k)) calc(9.023px * var(--k)) calc(10.312px * var(--k));
-  border-radius: calc(15.468px * var(--k));
-  font-size: calc(12px * var(--k));
-  letter-spacing: calc(-0.2578px * var(--k));
-}
+.shopCard--soldOut { filter: grayscale(1); opacity: 0.62; }
+.shopCard--soldOut:hover { transform: none; }
+.shopCard--soldOut:hover .shopCardArt img { transform: none; }
 
 /* Cart dock --------------------------------------------------------- */
 
@@ -634,53 +420,31 @@ body {
    Product detail — node 76:1380
    =================================================================== */
 
-/* The detail layout is 1049px in the design, wider than the 1021px grid. */
-.shopMain--wide { width: 1054px; }
-.shopDetail { width: 1049px; max-width: 100%; }
-
-.shopBack {
-  font: var(--t-label);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 101px;
-  padding: 14px 18px 14px 16px;
-  border-radius: 24px;
-  background: #eaf0fb;
-  color: var(--store-dark);
-  letter-spacing: -0.32px;
-  text-decoration: none;
-  transition: background-color 140ms ease;
-}
-
-.shopBack:hover { background: #dfe8f8; }
+/* Product sheet content (node 203:9859). */
+.shopDetail { width: 100%; }
 
 .shopDetailGrid {
   display: grid;
-  grid-template-columns: 432px minmax(0, 520px);
+  grid-template-columns: 451px 543px;
   justify-content: space-between;
-  gap: 97px;
-  margin-top: 62px;
+  gap: 48px;
 }
 
-.shopDetailInfo { display: flex; flex-direction: column; justify-content: space-between; }
-.shopDetailTop { display: flex; flex-direction: column; align-items: flex-start; max-width: 315px; }
+.shopDetailInfo { display: flex; flex-direction: column; justify-content: center; gap: 123px; }
+.shopDetailTop { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; max-width: 315px; }
+.shopDetailCopy { display: flex; flex-direction: column; gap: 16px; }
 
 .shopDetailName {
-  font: 700 30px/1.4 "5by7", monospace; /* product titles keep 5by7 */
-  margin: 0 0 6px;
+  font: var(--t-display);
+  margin: 0;
   letter-spacing: -0.48px;
   color: var(--store-ink);
 }
 
-.shopDetailDesc {
-  font: var(--t-body);
-  margin: 0 0 20px;
-  letter-spacing: -0.16px;
-  color: var(--store-body);
-}
+.shopDetailDesc { font: var(--t-body-lg); margin: 0; letter-spacing: -0.18px; color: var(--store-body); }
 
-.shopDetailActions { display: flex; flex-direction: column; gap: 24px; width: 432px; max-width: 100%; margin-top: 123px; }
+.shopDetailActions { display: flex; flex-direction: column; gap: 24px; width: 432px; max-width: 100%; }
+.shopDetailBuy { display: flex; flex-direction: column; gap: 48px; }
 
 .shopQuantityRow { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .shopQuantityLabel {
@@ -714,25 +478,6 @@ body {
 .shopStepper output {
   font: var(--t-label); letter-spacing: -0.32px; color: #0e0747; min-width: 10px; text-align: center; }
 
-.shopAddToCart {
-  font: var(--t-label);
-  margin-top: 24px;
-  width: 100%;
-  padding: 14px 18px 14px 16px;
-  border: 1px solid var(--store-blue-line);
-  border-radius: 24px;
-  background: var(--store-blue-soft);
-  color: var(--store-blue);
-  line-height: 14px;
-  letter-spacing: -0.32px;
-  cursor: pointer;
-  transition: background-color 140ms ease;
-}
-
-.shopAddToCart:hover { background: rgba(188, 209, 241, 0.5); }
-.shopAddToCart:disabled { opacity: 0.6; cursor: not-allowed; }
-.shopAddToCart:disabled:hover { background: var(--store-blue-soft); }
-
 .shopAllergens {
   padding: 12px;
   border-radius: 4px;
@@ -746,9 +491,10 @@ body {
   font: var(--t-small); margin: 5px 0 0; letter-spacing: -0.14px; }
 
 .shopDetailArt {
+  position: relative;
   height: 521px;
-  border: 1px solid var(--store-cream);
-  border-radius: 12px;
+  border: 1.017px solid var(--store-cream);
+  border-radius: 24px;
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -756,12 +502,12 @@ body {
   background: linear-gradient(180deg, var(--area-accent, #fbf8ef) 53%, rgba(188, 209, 241, 0.55) 100%);
 }
 
-.shopDetailArt img { width: 60%; height: auto; object-fit: contain; }
+.shopDetailArt img { width: 153.557px; height: auto; display: block; }
 
 @media (max-width: 1100px) {
-  .shopDetail { width: auto; }
   .shopDetailGrid { grid-template-columns: 1fr; gap: 40px; }
-  .shopDetailActions { margin-top: 40px; width: 100%; }
+  .shopDetailInfo { gap: 40px; }
+  .shopDetailActions { width: 100%; }
   .shopDetailArt { height: 360px; }
 }
 
@@ -932,44 +678,7 @@ a.storeCart:hover { filter: brightness(0.95); }
 .receiptItems { list-style: none; display: flex; align-items: center; gap: 37px; margin: 0; padding: 0; }
 .receiptItems img { width: 56px; height: 56px; display: block; object-fit: contain; }
 
-.receiptBack {
-  font: var(--t-label);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  padding: 14px 18px 14px 16px;
-  border-radius: 24px;
-  background: #eaf0fb;
-  color: var(--store-dark);
-  letter-spacing: -0.32px;
-  text-decoration: none;
-  transition: background-color 140ms ease;
-}
-
-.receiptBack:hover { background: #dfe8f8; }
-
-/* Secondary action: outlined, no fill. */
-.receiptBack--outline { background: transparent; border: 1.5px solid #eaf0fb; padding-top: 12.5px; padding-bottom: 12.5px; }
-.receiptBack--outline:hover { background: #eaf0fb; }
-
 @media (max-width: 760px) {
   .receiptMain { width: auto; min-height: 0; display: block; }
   .receipt { width: auto; margin-left: 0; }
 }
-
-/* ===================================================================
-   Design-audit fixes, each behind its own toggle so they can be
-   compared against the current build. Attributes are set on <html> by
-   the dev-only panel; with none set, nothing below applies.
-   =================================================================== */
-
-/* FIX 3 — display weight. Four of six designs set 5by7 Regular; the type
-   scale currently uses Bold everywhere. */
-html[data-fix-weight] { --t-display: 400 30px/1.4 "5by7", monospace; }
-/* About and Gallery are Bold in their designs, so they keep it. */
-html[data-fix-weight] .storeMain--about .storeHeading,
-html[data-fix-weight] .shopHeading h1 { font-weight: 700; }
-
-/* FIX 4 — gallery subtitle leading. Figma specifies leading-none. */
-html[data-fix-leading] .shopHeading p { line-height: 1; }

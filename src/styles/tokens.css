@@ -1,0 +1,118 @@
+/* ===================================================================
+   Socratica Store design tokens: the single source for fonts, colour and
+   type. Imported by the store layout and the Ramp layout (the About sheet
+   renders on the Ramp homescreen too). Figma nodes 2:68581, 128:3191,
+   128:3298, 203:9859.
+   =================================================================== */
+
+@font-face {
+  font-family: "5by7";
+  src: url("/store/fonts/5by7-regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "5by7";
+  src: url("/store/fonts/5by7-bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TWK Lausanne";
+  src: url("/ramp/fonts/twk-lausanne-300.ttf") format("truetype");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TWK Lausanne";
+  src: url("/ramp/fonts/twk-lausanne-400.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Untitled Sans";
+  src: url("/store/fonts/UntitledSans-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Untitled Sans";
+  src: url("/store/fonts/UntitledSans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-display: swap;
+}
+
+:root {
+  --store-ink: #131313;
+  --store-body: #41403f;
+  --store-mute: #a09d98;
+  --store-dark: #2a2928;
+  --store-cream: #f5f1e2;
+  --store-line: rgba(207, 204, 196, 0.32);
+  --store-blue: #2c64b7;
+  --store-blue-soft: rgba(188, 209, 241, 0.32);
+  --store-blue-line: #e8ecf2;
+  --store-blue-wash: #eaf0fb;
+  --store-line-strong: #d2cecb;
+
+  /* Selector sections: card hover surface + ink, from the hover frames
+     (128:3298 Aisle, 128:3529 Fruits, 128:3413 Fridge). */
+  --section-aisle-surface: #fff4d8;
+  --section-aisle-ink: #674900;
+  --section-aisle-line: #e9b34a;
+  --section-fruits-surface: #e9edc9;
+  --section-fruits-ink: #3d5300;
+  --section-fruits-line: #bdc291;
+  --section-fridge-surface: #e3cfd5;
+  --section-fridge-ink: #51163e;
+  --section-fridge-line: #ad7e95;
+
+  /* Tooltip: Neutral/900 on Base/White with shadow-md. */
+  --tooltip-bg: #171717;
+  --tooltip-ink: #fafafa;
+  --tooltip-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+  /* Shared motion: Ramp-like, fast ease-out. */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 140ms;
+
+  /* Single vertical rhythm: distance from the header to page content.
+     Figma varies this per page (62–242px); one value keeps the store
+     feeling like one site. */
+  --store-content-top: 64px;
+}
+
+/* ===================================================================
+   Type scale — the only font pairings the store uses.
+   Every rule below references one of these; no ad-hoc sizes.
+   `font` shorthand is weight / size / line-height / family.
+   =================================================================== */
+
+:root {
+  /* 5by7 — chrome and the product sheet title */
+  --t-display: 700 30px/1.4 "5by7", monospace;
+  --t-chip: 700 10px/0.7 "5by7", monospace;
+
+  /* TWK Lausanne — page headings */
+  --t-heading: 400 26.8px/32px "TWK Lausanne", sans-serif;
+
+  /* Untitled Sans — everything else */
+  --font-sans: "Untitled Sans", "Helvetica Neue", Arial, sans-serif;
+  --t-body-lg: 400 18px/1.4 "Untitled Sans", sans-serif;
+  --t-emphasis: 500 20px/1.4 "Untitled Sans", sans-serif;
+  --t-title: 500 18px/1.4 "Untitled Sans", sans-serif;
+  --t-label: 500 16px/1.4 "Untitled Sans", sans-serif;
+  --t-body: 400 16px/1.4 "Untitled Sans", sans-serif;
+  --t-small: 400 14px/1.4 "Untitled Sans", sans-serif;
+  --t-small-strong: 500 14px/1.4 "Untitled Sans", sans-serif;
+  --t-caption: 400 12px/1.4 "Untitled Sans", sans-serif;
+  --t-micro-strong: 500 12px/1.4 "Untitled Sans", sans-serif;
+  --t-mono-number: 600 16px/1 "SF Mono", ui-monospace, Menlo, monospace;
+  --t-pixel-caption: 700 12px/1.4 "5by7", monospace;
+}
+

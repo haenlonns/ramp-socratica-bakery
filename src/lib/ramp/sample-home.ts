@@ -7,7 +7,7 @@ export const sampleHomeData: HomeData = {
 
   nav: [
     { id: "home", label: "Home", icon: "sb-home", href: "/ramp" },
-    { id: "how", label: "How it works", icon: "sb-how", href: "/store" },
+    { id: "how", label: "How it works", icon: "sb-how", href: "/ramp?about" },
     { id: "store", label: "Socratica Store", icon: "sb-store", href: "/store/market" },
   ],
 

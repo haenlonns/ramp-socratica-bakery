@@ -5,6 +5,7 @@ import { greetingFor } from "@/lib/ramp/format";
 import { viewerFor } from "@/lib/ramp/from-config";
 import { clearPurchases, seedSamplePurchases, usePurchases } from "@/lib/store/purchases";
 import { useRampConfig } from "./RampConfigProvider";
+import { AboutSheet } from "./AboutSheet";
 import { DevStateToggle } from "./DevStateToggle";
 import { HomeOverview } from "./HomeOverview";
 import { TransactionsSection } from "./TransactionsSection";
@@ -34,6 +35,7 @@ export function RampHomeFeed({ data }: { data: HomeData }) {
 
       <TransactionsSection />
       <HomeOverview />
+      <AboutSheet />
     </div>
   );
 }

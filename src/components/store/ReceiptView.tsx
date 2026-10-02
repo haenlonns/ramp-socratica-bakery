@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export type ReceiptFailure = "budget" | "stock";
 
@@ -44,8 +44,8 @@ export function ReceiptView({ failure }: { failure?: ReceiptFailure }) {
         </ul>
 
         <div className="receiptActions">
-          <Link href={copy.back.href} className="receiptBack">{copy.back.label}</Link>
-          <Link href="/ramp" className="receiptBack receiptBack--outline">Back to home</Link>
+          <Button href={copy.back.href} variant="tint" block>{copy.back.label}</Button>
+          <Button href="/ramp" variant="outline" block>Back to home</Button>
         </div>
       </div>
     </div>

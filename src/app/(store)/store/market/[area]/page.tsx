@@ -3,6 +3,7 @@ import { AreaHeading } from "@/components/store/AreaHeading";
 import { CartDock } from "@/components/store/CartDock";
 import { GalleryTuner } from "@/components/store/GalleryTuner";
 import { ProductCard } from "@/components/store/ProductCard";
+import { ProductSheet } from "@/components/store/ProductSheet";
 import { StoreHeader } from "@/components/store/StoreHeader";
 import { VisitPills, type VisitTarget } from "@/components/store/VisitPills";
 import { AREA_TONES } from "@/lib/store/area-tones";
@@ -43,9 +44,10 @@ export default async function AreaPage({ params }: { params: Promise<{ area: str
         </div>
         <div className="shopGrid">
           {vendorProducts.map((product) => (
-            <ProductCard key={product.id} product={product} areaId={vendor.slug} />
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        <ProductSheet />
       </main>
       <CartDock />
       <GalleryTuner />

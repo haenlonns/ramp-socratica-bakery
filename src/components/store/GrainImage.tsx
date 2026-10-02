@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Grain } from "./Grain";
+import "./grain.css";
 
 /**
  * A transparent product cutout with grain clipped to its shape. The wrapper

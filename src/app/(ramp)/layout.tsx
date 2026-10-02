@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RampConfigProvider } from "@/components/ramp/RampConfigProvider";
+import "@/styles/tokens.css";
 import "./ramp.css";
 
 export const metadata: Metadata = {

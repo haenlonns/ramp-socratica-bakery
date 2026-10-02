@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useSyncExternalStore } from "react";
+import "./grain.css";
 
 /**
  * Film grain for image frames. Draws random white pixels onto a canvas that

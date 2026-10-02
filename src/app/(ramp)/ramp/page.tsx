@@ -12,7 +12,7 @@ export default async function RampHomePage() {
   const data = sampleHomeData;
 
   return (
-    <RampAppShell nav={data.nav}>
+    <RampAppShell nav={data.nav} topBar={false}>
       <div className="rampHomeGrid">
         <RampHomeFeed data={data} />
       </div>
