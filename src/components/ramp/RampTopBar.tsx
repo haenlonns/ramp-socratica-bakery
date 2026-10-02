@@ -1,12 +1,9 @@
 "use client";
 
-import { viewerFor } from "@/lib/ramp/from-config";
+import type { Viewer } from "@/lib/ramp/types";
 import { RampIcon } from "./RampIcon";
-import { useRampConfig } from "./RampConfigProvider";
 
-export function RampTopBar() {
-  const { config } = useRampConfig();
-  const viewer = viewerFor(config);
+export function RampTopBar({ viewer }: { viewer: Viewer }) {
   return (
     <div className="rampTopBar">
       <button type="button" className="rampSearch">

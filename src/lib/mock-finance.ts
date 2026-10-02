@@ -1,7 +1,13 @@
 import { createAdminClient } from "./supabase/admin";
 import type { CurrentUser } from "./auth";
 
-export async function getMockFinanceOverview(user: CurrentUser) {
+export type MockFinanceOverview = {
+  fund: { availableCents: number; fundLimitCents: number; currency: string; status: string; updatedAt: string };
+  card: { id: string; displayIdentifier: string; displaySuffix: string; status: string; issuedAt: string };
+  transactions: { id: string; status: string; type: string; amountCents: number; currency: string; merchantName: string; createdAt: string; orderId: string | null }[];
+};
+
+export async function getMockFinanceOverview(user: CurrentUser): Promise<MockFinanceOverview> {
   const db = createAdminClient();
   const [{ data: fund }, { data: card }] = await Promise.all([
     db.from("team_funds").select("id,currency,available_cents,fund_limit_cents,status,updated_at").eq("team_id", user.teamId).single(),

@@ -10,7 +10,7 @@ export default async function ExpenseDetailPage({ params }: { params: Promise<{ 
   if (!expense) notFound();
 
   return (
-    <RampAppShell nav={sampleHomeData.nav}>
+    <RampAppShell nav={sampleHomeData.nav} viewer={sampleHomeData.viewer}>
       <ExpenseDetailView expense={expense} />
     </RampAppShell>
   );
