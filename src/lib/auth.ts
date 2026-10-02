@@ -27,3 +27,16 @@ export async function getCurrentAdmin() {
   const { data } = await createAdminClient().from("event_admins").select("role").eq("event_id", EVENT_ID).eq("user_id", user.id).maybeSingle();
   return data ? { ...user, role: data.role as "ADMIN" | "SUPERADMIN" } : null;
 }
+
+// Signed in but not on a team: accept the newest live invitation addressed to this email.
+// The invitation row already binds the email to a team, and accept_team_invitation re-checks
+// the email, expiry, revocation, admin and one-team rules, so no browser-held token is needed.
+export async function acceptPendingInvitationForEmail(user: AuthenticatedUser): Promise<boolean> {
+  const admin = createAdminClient();
+  const { data: invitation } = await admin.from("team_invitations").select("token_hash")
+    .eq("event_id", EVENT_ID).eq("email", user.email.toLowerCase()).is("accepted_at", null).is("revoked_at", null)
+    .gt("expires_at", new Date().toISOString()).order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (!invitation) return false;
+  const { error } = await admin.rpc("accept_team_invitation", { target_token_hash: invitation.token_hash, target_user_id: user.id, target_email: user.email });
+  return !error;
+}
