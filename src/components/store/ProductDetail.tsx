@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Product } from "@/lib/catalog";
+import type { StoreProduct } from "@/lib/store/catalog-server";
 import { Button } from "@/components/ui/Button";
 import { PricePill } from "@/components/ui/PricePill";
 import { AllergenAlert } from "./AllergenAlert";
@@ -14,7 +14,7 @@ export function ProductDetail({
   product,
   allergens = "Baked in a facility that uses soy.",
 }: {
-  product: Product;
+  product: StoreProduct;
   allergens?: string;
 }) {
   const { lines, setQuantity: setCartQuantity } = useStoreCart();

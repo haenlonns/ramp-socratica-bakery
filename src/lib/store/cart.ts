@@ -24,7 +24,7 @@ export type CartLine = { productId: string; quantity: number };
 /** Stored compactly; a cookie is capped at ~4KB. */
 type StoredLine = { p: string; q: number };
 
-export function parseCart(raw: string | undefined): CartLine[] {
+export function parseCart(raw: string | undefined, productIds?: Set<string>): CartLine[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
@@ -34,7 +34,7 @@ export function parseCart(raw: string | undefined): CartLine[] {
       .filter((entry) => typeof entry?.p === "string" && Number.isInteger(entry?.q))
       // Drop anything no longer in the catalogue so a stale cookie cannot
       // resurrect a removed product.
-      .filter((entry) => productsById.has(entry.p) && entry.q > 0)
+      .filter((entry) => (productIds ? productIds.has(entry.p) : productsById.has(entry.p)) && entry.q > 0)
       .map((entry) => ({ productId: entry.p, quantity: Math.min(entry.q, PER_TEAM_LIMIT) }));
   } catch {
     return [];
@@ -50,12 +50,13 @@ export function serializeCart(lines: CartLine[]) {
 export function applyCartChange(
   lines: CartLine[],
   change: { type: "add" | "remove" | "set"; productId: string; quantity?: number },
+  productIds?: Set<string>,
 ): CartLine[] {
   const delta = change.quantity ?? 1;
   const existing = lines.find((line) => line.productId === change.productId);
 
   if (change.type === "set") {
-    if (!productsById.has(change.productId)) return lines;
+    if (!(productIds ? productIds.has(change.productId) : productsById.has(change.productId))) return lines;
     const next = Math.min(Math.max(Math.trunc(change.quantity ?? 0), 0), PER_TEAM_LIMIT);
     if (next === 0) return lines.filter((line) => line.productId !== change.productId);
     if (existing) {
@@ -65,7 +66,7 @@ export function applyCartChange(
   }
 
   if (change.type === "add") {
-    if (!productsById.has(change.productId)) return lines;
+    if (!(productIds ? productIds.has(change.productId) : productsById.has(change.productId))) return lines;
     if (existing) {
       return lines.map((line) =>
         line.productId === change.productId
@@ -83,11 +84,11 @@ export function applyCartChange(
     .filter((line) => line.quantity > 0);
 }
 
-export function cartTotals(lines: CartLine[]) {
+export function cartTotals(lines: CartLine[], products?: Array<{ id: string; priceCents: number }>) {
   let count = 0;
   let totalCents = 0;
   for (const line of lines) {
-    const product = productsById.get(line.productId);
+    const product = products?.find((candidate) => candidate.id === line.productId) ?? productsById.get(line.productId);
     if (!product) continue;
     count += line.quantity;
     totalCents += product.priceCents * line.quantity;

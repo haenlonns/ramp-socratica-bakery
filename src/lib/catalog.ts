@@ -77,6 +77,9 @@ export function getVendor(slug: string) {
 /** Every product across the registry, for pickers and admin UI. */
 export const allProducts: Product[] = vendors.flatMap((vendor) => vendor.catalog);
 
+// Kept for the live-catalogue fallback used by the server store adapter.
+export const catalog = allProducts;
+
 export const productsById = new Map(
   vendors.flatMap((vendor) => vendor.catalog.map((product) => [product.id, product] as const)),
 );

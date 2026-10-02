@@ -1,7 +1,13 @@
 import { catalog, type Product } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export type StoreProduct = Product & { vendorSlug: string; vendorName: string };
+export type StoreProduct = Product & {
+  vendorSlug: string;
+  vendorName: string;
+  perTeamLimit: number;
+  inventoryQuantity: number;
+  imageFilename: string;
+};
 export type StoreVendor = { slug: string; name: string };
 
 const fallbackProducts: StoreProduct[] = catalog.flatMap((product) => {
@@ -10,7 +16,7 @@ const fallbackProducts: StoreProduct[] = catalog.flatMap((product) => {
     : product.id === "vanilla" || product.id === "chocolate"
       ? { slug: "fruits", name: "Fruits" }
       : { slug: "fridge", name: "Fridge" };
-  return [{ ...product, vendorSlug: vendor.slug, vendorName: vendor.name }];
+  return [{ ...product, vendorSlug: vendor.slug, vendorName: vendor.name, perTeamLimit: 4, inventoryQuantity: 24, imageFilename: `${product.id}.svg` }];
 });
 
 /**
