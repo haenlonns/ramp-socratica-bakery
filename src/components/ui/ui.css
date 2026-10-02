@@ -1,0 +1,164 @@
+/* Shared UI primitives. Tokens come from src/styles/tokens.css. */
+
+/* Sheet ------------------------------------------------------------- */
+
+.sheet { position: fixed; inset: 0; z-index: 100; --sheet-inset: 144px; }
+.sheet--sidebar { --sheet-inset: 221px; }
+
+.sheetBackdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--store-ink);
+  opacity: 0.3;
+  animation: sheetFadeIn var(--dur-fast) var(--ease-out) both;
+}
+.sheet[data-state="closed"] .sheetBackdrop { animation-name: sheetFadeOut; }
+
+.sheetPanel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - var(--sheet-inset));
+  overflow: auto;
+  background: #fff;
+  animation: sheetIn 180ms var(--ease-out) both;
+}
+.sheet[data-state="closed"] .sheetPanel { animation-name: sheetOut; }
+
+@keyframes sheetFadeIn { from { opacity: 0; } to { opacity: 0.3; } }
+@keyframes sheetFadeOut { from { opacity: 0.3; } to { opacity: 0; } }
+@keyframes sheetIn { from { opacity: 0; transform: translateX(32px); } to { opacity: 1; transform: none; } }
+@keyframes sheetOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateX(32px); } }
+
+.sheetClose {
+  position: absolute;
+  top: 49px;
+  right: 53px;
+  z-index: 1;
+  width: 50px;
+  height: 50px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--store-line-strong);
+  background: #fff;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), transform 80ms var(--ease-out);
+}
+.sheetClose:hover { background: var(--store-blue-wash); }
+.sheetClose:active { transform: scale(0.96); }
+
+.sheetBody { min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 120px 110px 120px var(--sheet-gutter, 95px); }
+
+@media (max-width: 760px) {
+  .sheet, .sheet--sidebar { --sheet-inset: 0px; }
+  .sheetBody { padding: 96px 24px 48px; }
+  .sheetClose { right: 24px; }
+}
+
+/* Button ------------------------------------------------------------ */
+
+.btn {
+  font: var(--t-label);
+  line-height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 18px 14px 16px;
+  border: 1px solid transparent;
+  border-radius: 24px;
+  letter-spacing: -0.32px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), transform 80ms var(--ease-out);
+}
+.btn:active:not(:disabled) { transform: scale(0.985); }
+.btn--block { display: flex; width: 100%; }
+
+.btn--soft { background: var(--store-blue-soft); border-color: var(--store-blue-line); color: var(--store-blue); }
+.btn--soft:hover:not(:disabled) { background: rgba(188, 209, 241, 0.5); }
+
+.btn--tint { background: var(--store-blue-wash); color: var(--store-dark); }
+.btn--tint:hover:not(:disabled) { background: #dfe8f8; }
+
+.btn--outline { background: transparent; border: 1.5px solid var(--store-blue-wash); color: var(--store-dark); padding-block: 12.5px; }
+.btn--outline:hover:not(:disabled) { background: var(--store-blue-wash); }
+
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* PricePill --------------------------------------------------------- */
+
+.pricePill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--area-accent, #f4f0fa);
+  color: var(--area-accent-dark, #0e0747);
+}
+.pricePill--sm { font: var(--t-micro-strong); height: 27.3px; padding: 0 11.6px 0 10.3px; border-radius: 15.5px; letter-spacing: -0.26px; }
+.pricePill--lg { font: var(--t-emphasis); padding: 14px 18px 14px 16px; border-radius: 24px; letter-spacing: -0.4px; line-height: 14px; }
+.pricePill--soldOut { background: #e9e6e4; color: var(--store-dark); }
+
+/* Tooltip ----------------------------------------------------------- */
+
+.tooltip { position: absolute; top: 0; left: 0; z-index: 5; pointer-events: none; will-change: transform; }
+
+.tooltipBubble {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-ink);
+  font: var(--t-small);
+  white-space: nowrap;
+  box-shadow: var(--tooltip-shadow);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.tooltip[data-visible="true"] .tooltipBubble { opacity: 1; transform: none; }
+.tooltipBubble::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: -5px;
+  width: 10px;
+  height: 10px;
+  background: var(--tooltip-bg);
+  transform: translateY(-50%) rotate(45deg);
+  border-radius: 2px;
+}
+
+/* SectionCard ------------------------------------------------------- */
+
+.sectionCard {
+  display: block;
+  padding: 12px;
+  border: 1px solid var(--store-line);
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--store-body);
+  background: #fff;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out), transform 80ms var(--ease-out);
+}
+.sectionCard:active { transform: scale(0.99); }
+.sectionCard:focus-visible { outline: 2px solid var(--store-blue); outline-offset: 2px; }
+
+.sectionCardHead { display: flex; align-items: center; }
+.sectionCardName { font: var(--t-title); letter-spacing: -0.36px; }
+.sectionCardCaret { width: 20px; height: 20px; display: block; transition: transform var(--dur-fast) var(--ease-out); }
+.sectionCard[data-active="true"] .sectionCardCaret { transform: translateX(3px); }
+.sectionCardBlurb { display: block; margin-top: 8px; font: var(--t-body); letter-spacing: -0.16px; }
+
+.sectionCard--aisle[data-active="true"] { background: var(--section-aisle-surface); color: var(--section-aisle-ink); }
+.sectionCard--fruits[data-active="true"] { background: var(--section-fruits-surface); color: var(--section-fruits-ink); }
+.sectionCard--fridge[data-active="true"] { background: var(--section-fridge-surface); color: var(--section-fridge-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheetClose, .btn, .tooltipBubble, .sectionCard, .sectionCardCaret { transition: none; }
+  /* 1ms (not none) so onAnimationEnd still fires and the closed sheet unmounts. */
+  .sheetBackdrop, .sheetPanel { animation-duration: 1ms; }
+}

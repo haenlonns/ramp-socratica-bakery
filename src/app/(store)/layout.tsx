@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { StoreCartProvider } from "@/components/store/StoreCart";
 import { readCart } from "@/lib/store/cart-server";
 import { getActiveStoreProducts } from "@/lib/store/catalog-server";
+import "@/styles/tokens.css";
 import "./store.css";
 
 export const metadata: Metadata = {

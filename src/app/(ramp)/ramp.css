@@ -192,29 +192,58 @@ body {
 .rampSidebar {
   width: 220.5px;
   flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
   background: var(--ramp-grey-95);
+  border-right: 1px solid var(--ramp-line);
   display: flex;
   flex-direction: column;
+  font-weight: 400;
 }
 
-.rampSidebarHead { height: 48px; display: flex; align-items: center; padding: 0 20px; }
+.rampSidebarHead { display: flex; align-items: center; padding: 8px 8px 16px; }
 
-.rampNav { list-style: none; margin: 0; padding: 12px 12px 0; display: flex; flex-direction: column; gap: 2px; }
+.rampSidebarIconBtn {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.rampSidebarIconBtn:hover { background: rgba(26, 25, 25, 0.04); }
+
+.rampSidebarScroll { flex: 1; min-height: 0; overflow: auto; padding: 4px 0; display: flex; flex-direction: column; gap: 4px; }
+
+.rampSidebarUser { padding: 8px 8px 20px 16px; font-size: 13.3px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
+.rampSidebarUser p { margin: 0; }
+.rampSidebarUserSub { opacity: 0.4; }
+
+.rampSidebarRule { width: 100%; height: 1px; margin: 0; border: 0; background: var(--ramp-line); }
+
+.rampNav { list-style: none; margin: 0; padding: 0 8px; display: flex; flex-direction: column; gap: 4px; }
 
 .rampNavItem {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 8px;
+  min-height: 32px;
+  padding: 6px 8px;
   border-radius: 4px;
   text-decoration: none;
-  color: var(--ramp-grey-10);
-  font-size: 14px;
+  color: var(--ramp-grey-42);
+  font-size: 13.5px;
   line-height: 20px;
 }
 
 .rampNavItem:hover { background: rgba(26, 25, 25, 0.04); }
-.rampNavItem--active { background: var(--ramp-line); }
+.rampNavItem--active { min-height: 36px; padding-top: 10px; border-radius: 7px; background: var(--ramp-line); color: var(--ramp-grey-10); }
+.rampNavItem--active:hover { background: var(--ramp-line); }
 
 /* Inert rows are <button>, so reset the UA styling to match the links. */
 .rampNavItem--inert {
@@ -222,11 +251,30 @@ body {
   border: 0;
   background: transparent;
   font: inherit;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 20px;
   text-align: left;
   cursor: default;
 }
+
+.rampSidebarFoot { padding: 8px 8px; border-top: 1px solid var(--ramp-line); }
+.rampSidebarFoot .rampNavItem { font-size: 13.6px; }
+
+.rampLogout {
+  width: 100%;
+  min-height: 32px;
+  padding: 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--ramp-line);
+  color: var(--ramp-grey-42);
+  font: inherit;
+  font-size: 11.8px;
+  font-weight: 300;
+  line-height: 16px;
+  cursor: pointer;
+}
+.rampLogout:hover { background: var(--ramp-line-strong); }
 .rampNavLabel { flex: 1; }
 
 .rampNavBadge {
@@ -333,13 +381,11 @@ body {
    viewport when scrolled to the bottom. */
 .rampFeed { flex: 1; min-width: 0; max-width: 905.5px; padding: 32px 56px 16px; }
 
-.rampGreeting {
-  margin: 0 0 16px;
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 32px;
-  letter-spacing: -0.56px;
-}
+/* Homescreen frame: 74.7px of space where a top bar would be, and the feed
+   sits 125px in from the sidebar edge (node 203:8202). */
+.rampMain--bare .rampFeed { padding-top: 106.7px; margin-left: 125px; }
+
+.rampGreeting { margin: 0 0 31px; font: var(--t-heading); letter-spacing: -0.56px; }
 
 /* Notice --------------------------------------------------------- */
 
@@ -536,6 +582,7 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   .rampHomeGrid { flex-direction: column; }
   .rampWallet { width: 100%; padding: 0 56px 40px; }
   .rampFeed { max-width: none; }
+  .rampMain--bare .rampFeed { margin-left: 0; }
 }
 
 @media (max-width: 760px) {
@@ -970,13 +1017,32 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   line-height: 24px;
 }
 
-.rampEmpty { margin: 0; padding: 64px 40px; text-align: center; font-size: 16px; font-weight: 300; color: var(--ramp-grey-42); }
+.rampEmpty {
+  margin: 24px 40px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  background: var(--ramp-white);
+  border: 1px solid #d2cecb;
+  text-align: center;
+}
+.rampEmpty--feed { margin: 32px 0 0; }
+.rampEmpty--tx { margin: 0; min-height: 277px; }
+.rampEmptyArt { width: 116px; height: auto; display: block; }
+.rampEmptyText { display: flex; flex-direction: column; align-items: center; }
+.rampEmptyTitle { margin: 0; font-size: 15.3px; font-weight: 300; line-height: 24px; color: var(--ramp-grey-10); }
+.rampEmptyLink { font-size: 13.5px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); text-decoration: none; }
+.rampEmptyLink:hover { color: var(--ramp-grey-10); }
 
 @media (max-width: 760px) {
   .rampDrawer { width: 100%; }
   .rampDrawerHead { padding-left: 24px; padding-right: 24px; }
   .rampTabs { margin-left: -24px; margin-right: -24px; padding-left: 24px; }
   .rampSpendPanel, .rampIssued, .rampPolicies { padding-left: 24px; padding-right: 24px; }
+  .rampEmpty:not(.rampEmpty--feed):not(.rampEmpty--tx) { margin-left: 24px; margin-right: 24px; }
   .rampCardBlock { flex-direction: column; }
 }
 
@@ -1643,4 +1709,119 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   .rampAdminListRow > .rampAdminActions { width: 100%; margin-left: 0; }
   .rampFacilitator .adminControls, .rampFacilitator .accessGrid { grid-template-columns: 1fr; }
   .rampFacilitator .fundLimitsFooter, .rampFacilitator .inviteForm, .rampFacilitator .tableHeader, .rampFacilitator .teamManagementHeader { align-items: stretch; flex-direction: column; }
+}
+
+
+/* Home: transactions, card balance and insights ------------------------ */
+
+.rampTx { margin-top: 0; }
+.rampTxHead { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 46px; margin-bottom: 24px; }
+.rampTxTitle { margin: 0; font-size: 15.1px; font-weight: 400; line-height: 24px; letter-spacing: -0.32px; }
+.rampTxIntro { margin: 2px 0 0; font-size: 13.2px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
+.rampTxPolicy {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 400;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-position: from-font;
+  cursor: pointer;
+}
+.rampTxActions { display: flex; gap: 8px; }
+.rampTxActions .rampBtn { text-decoration: none; }
+
+.rampTxList { list-style: none; margin: 0; padding: 0; }
+.rampTxRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  height: 68px;
+  margin-bottom: -1px;
+  padding: 16px;
+  background: var(--ramp-white);
+  border: 1px solid var(--ramp-line-strong);
+}
+.rampTxRow > div:nth-child(2) { padding-left: 8px; }
+.rampTxMain { margin: 0; font-size: 15.3px; font-weight: 300; line-height: 24px; color: var(--ramp-grey-10); }
+.rampTxSub { margin: 0; font-size: 13.3px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
+.rampTxSub--strong { font-size: 13.5px; }
+
+.rampTxAvatar {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #a1b3df;
+  display: grid;
+  place-items: center;
+}
+.rampTxAvatarArt { width: 23px; height: 23px; display: block; }
+.rampTxBadge {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  padding: 3px;
+  border-radius: 50%;
+  background: #e7f3ea;
+  line-height: 0;
+}
+.rampTxBadge img { width: 12px; height: 12px; display: block; }
+
+.rampHomeCols { display: flex; gap: 32px; margin-top: 56px; padding-bottom: 40px; }
+.rampHomeCol { flex: 1; min-width: 0; }
+.rampColHead { display: flex; align-items: center; justify-content: space-between; padding: 8px; margin-bottom: 8px; }
+.rampColTitle { font-size: 13.6px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
+.rampColLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 13.9px;
+  line-height: 20px;
+  color: var(--ramp-grey-42);
+  cursor: pointer;
+}
+.rampColLink:hover { color: var(--ramp-grey-10); }
+
+.rampStat {
+  width: 100%;
+  height: 112px;
+  padding: 16px;
+  border: 1px solid var(--ramp-line);
+  border-radius: 4px;
+  background: transparent;
+  display: flex;
+  text-align: left;
+  font: inherit;
+}
+.rampStat--card { flex-direction: column; cursor: pointer; }
+.rampStat--card:hover { background: var(--ramp-grey-98); }
+.rampStatLabel { display: block; font-size: 13.5px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
+.rampStatValue { display: block; margin-top: 4px; font-size: 19.7px; font-weight: 400; line-height: 28px; color: var(--ramp-grey-10); }
+
+.rampBal { display: flex; height: 8px; margin-top: auto; }
+.rampBalFill { height: 100%; background: var(--ramp-azure-58); }
+.rampBalGap { width: 1px; height: 100%; background: var(--ramp-white); }
+.rampBalRest { flex: 1; height: 100%; background: var(--ramp-line); }
+
+.rampStat--insight { padding-right: 0; justify-content: space-between; overflow: hidden; }
+.rampInsightText { width: 119px; flex-shrink: 0; display: flex; flex-direction: column; }
+.rampDelta { margin-top: auto; display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 300; line-height: 20px; color: #425e93; }
+.rampDelta img { width: 16px; height: 16px; }
+.rampChart { width: 151px; height: 112px; margin: -16px 0; flex-shrink: 0; }
+.rampChartEmpty {
+  width: 135px;
+  height: 40px;
+  align-self: center;
+  border-top: 2px solid #7693d2;
+  background: linear-gradient(180deg, rgba(118, 147, 210, 0.5), rgba(118, 147, 210, 0));
+}
+
+.rampPolicyTitle { margin: 0 0 16px; font: var(--t-heading); letter-spacing: -0.56px; }
+.rampPolicyList { margin: 0; padding-left: 20px; max-width: 462px; display: flex; flex-direction: column; gap: 8px; font: var(--t-body); color: var(--store-body); }
+
+@media (max-width: 760px) {
+  .rampTxHead { flex-direction: column; align-items: flex-start; }
+  .rampHomeCols { flex-direction: column; }
 }

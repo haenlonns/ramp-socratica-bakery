@@ -7,11 +7,14 @@ export function CartSummary({
   totalCents,
   onPayWithRamp,
   disabled,
+  loading = false,
 }: {
   subtotalCents: number;
   totalCents: number;
   onPayWithRamp?: () => void;
   disabled?: boolean;
+  /** Payment in flight: swaps the label for a spinner and blocks clicks. */
+  loading?: boolean;
 }) {
   return (
     <aside className="checkoutSummary">
@@ -28,14 +31,27 @@ export function CartSummary({
         </div>
       </dl>
 
-      <button type="button" className="checkoutRamp" onClick={onPayWithRamp} disabled={disabled}>
-        <span className="checkoutRampMark" aria-label="Pay with Ramp">
-          <img src="/ramp/logo-wordmark.svg" alt="" aria-hidden />
-          <img src="/ramp/logo-mark.svg" alt="" aria-hidden />
-        </span>
+      <button
+        type="button"
+        className="checkoutRamp"
+        onClick={onPayWithRamp}
+        disabled={disabled || loading}
+        aria-busy={loading}
+      >
+        {loading ? (
+          <>
+            <span className="checkoutSpinner" aria-hidden />
+            <span className="checkoutRampLabel" role="status">Processing payment</span>
+          </>
+        ) : (
+          <>
+            <span className="checkoutRampLabel">Pay with</span>
+            <span className="checkoutRampMark" role="img" aria-label="Ramp">
+              <img src="/store/ramp-pay.png" alt="" aria-hidden />
+            </span>
+          </>
+        )}
       </button>
-
-      <button type="button" className="checkoutAltPay">Add credit card instead</button>
     </aside>
   );
 }

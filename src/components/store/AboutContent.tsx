@@ -1,0 +1,56 @@
+import { Button } from "@/components/ui/Button";
+import { Grain } from "./Grain";
+import "./about.css";
+
+const STEPS = [
+  {
+    n: 1,
+    image: "/store/step-1.png",
+    title: "Browse ingredients",
+    body: "You can add as many items as you want, so long as they fit in your budget left",
+  },
+  {
+    n: 2,
+    image: "/store/step-2.png",
+    title: "Send in your order",
+    body: "We will deliver the ingredients to you. Just keep track of the clock!",
+  },
+  {
+    n: 3,
+    image: "/store/step-3.png",
+    title: "Start cooking",
+    body: "You can continue to order additional items with any money you have leftover.",
+  },
+];
+
+/** "How it works": the content of the About sheet, and of the /store page. */
+export function AboutContent() {
+  return (
+    <div className="about">
+      <section className="aboutIntro">
+        <h1 className="aboutHeading">How it works</h1>
+        <p className="aboutBody">
+          The Socratica Store will deliver within 5 minutes, or your money back. Freshness is
+          guaranteed ;)
+        </p>
+        <Button href="/store/market" className="aboutStart">Get started</Button>
+      </section>
+
+      <ol className="aboutSteps">
+        {STEPS.map((step) => (
+          <li key={step.n} className="aboutStep">
+            <span className="aboutStepArt">
+              <img src={step.image} alt="" aria-hidden />
+              <Grain />
+            </span>
+            <span className="aboutStepHead">
+              <span className="aboutStepNumber">{step.n}</span>
+              <span className="aboutStepTitle">{step.title}</span>
+            </span>
+            <span className="aboutStepBody">{step.body}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}

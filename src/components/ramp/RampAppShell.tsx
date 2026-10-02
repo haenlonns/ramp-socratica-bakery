@@ -7,17 +7,20 @@ import { RampTopBar } from "./RampTopBar";
 export function RampAppShell({
   nav,
   viewer,
+  topBar = true,
   children,
 }: {
   nav: NavItem[];
   viewer: Viewer;
+  /** The homescreen frame has no top bar. */
+  topBar?: boolean;
   children: ReactNode;
 }) {
   return (
     <div className="rampApp">
       <RampSidebar items={nav} />
-      <div className="rampMain">
-        <RampTopBar viewer={viewer} />
+      <div className={topBar ? "rampMain" : "rampMain rampMain--bare"}>
+        {topBar && <RampTopBar viewer={viewer} />}
         <div className="rampContent">{children}</div>
       </div>
     </div>
