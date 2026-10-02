@@ -33,7 +33,7 @@ export function RampSidebar({ items }: { items: NavItem[] }) {
         <button type="button" className="rampSidebarIconBtn" aria-label="Collapse sidebar">
           <RampIcon name="sb-toggle" size={16} />
         </button>
-        <Link href="/ramp/home" className="rampSidebarIconBtn" aria-label="Ramp home">
+        <Link href="/ramp" className="rampSidebarIconBtn" aria-label="Ramp home">
           <img src="/ramp/icons/sb-logo.svg" alt="" aria-hidden width={15.57} height={16.09} />
         </Link>
       </div>

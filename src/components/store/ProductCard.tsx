@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import type { Product } from "@/lib/catalog";
-import { PER_TEAM_LIMIT } from "@/lib/store/cart";
 import { useStoreCart } from "./StoreCart";
 import { Grain } from "./Grain";
 
@@ -11,16 +10,18 @@ const money = (cents: number) =>
 
 export function ProductCard({ product, areaId }: { product: Product; areaId: string }) {
   const { add, lines } = useStoreCart();
-  const atLimit = (lines.find((line) => line.productId === product.id)?.quantity ?? 0) >= PER_TEAM_LIMIT;
+  const soldOut = product.inventoryQuantity === 0;
+  const limit = Math.min(product.perTeamLimit, product.inventoryQuantity);
+  const atLimit = (lines.find((line) => line.productId === product.id)?.quantity ?? 0) >= limit;
 
   return (
-    <article className="shopCard">
+    <article className={soldOut ? "shopCard shopCard--soldOut" : "shopCard"}>
       <Link
         href={`/store/market/${areaId}/${product.id}`}
         className="shopCardArt"
         aria-label={`View ${product.name}`}
       >
-        <img src={`/store/products/${product.id}.svg`} alt="" aria-hidden />
+        <img src={`/store/products/${product.imageFilename ?? `${product.id}.svg`}`} alt="" aria-hidden />
         <Grain />
       </Link>
 
@@ -33,10 +34,16 @@ export function ProductCard({ product, areaId }: { product: Product; areaId: str
           type="button"
           className="shopPrice"
           onClick={() => add(product.id)}
-          disabled={atLimit}
-          aria-label={atLimit ? `${product.name}: limit of ${PER_TEAM_LIMIT} reached` : `Add ${product.name} to cart`}
+          disabled={soldOut || atLimit}
+          aria-label={
+            soldOut
+              ? `${product.name} is sold out`
+              : atLimit
+                ? `${product.name}: limit of ${limit} reached`
+                : `Add ${product.name} to cart`
+          }
         >
-          {money(product.priceCents)}
+          {soldOut ? "Sold out" : money(product.priceCents)}
         </button>
       </div>
     </article>

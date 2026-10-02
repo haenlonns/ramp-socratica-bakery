@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { productsById } from "@/lib/catalog";
+import { catalogById } from "@/lib/catalog";
 import { activeTeam } from "@/lib/ramp/config";
 import { usePurchases, type Purchase } from "@/lib/store/purchases";
 import { EmptyPurchases } from "./EmptyPurchases";
@@ -24,7 +24,7 @@ function ago(at: number) {
 
 function describe(purchase: Purchase) {
   const names = purchase.lines
-    .map((line) => productsById.get(line.productId)?.name)
+    .map((line) => catalogById.get(line.productId)?.name)
     .filter((name): name is string => Boolean(name));
   if (names.length === 0) return "Store order";
   return names.length > 1 ? `${names[0]} +${names.length - 1} more` : names[0];

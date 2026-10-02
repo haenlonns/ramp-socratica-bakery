@@ -66,7 +66,18 @@ test("set replaces the quantity, clamps to the limit, and 0 removes", () => {
   assert.deepEqual(lines, []);
 });
 
-test("a stale cookie above the limit is clamped on read", () => {
-  const lines = parseCart(JSON.stringify([{ p: "granola", q: 50 }]));
-  assert.equal(lines[0].quantity, PER_TEAM_LIMIT);
+test("a stale cookie is only held to a sanity ceiling on read", () => {
+  const lines = parseCart(JSON.stringify([{ p: "granola", q: 5000 }]));
+  assert.equal(lines[0].quantity, 99);
+});
+
+test("per-product limits (team limit or low stock) cap add and set", () => {
+  const ids = new Set(["granola", "honey"]);
+  const limits = new Map([["granola", 2], ["honey", 1]]);
+  let lines = applyCartChange([], { type: "add", productId: "granola", quantity: 5 }, ids, limits);
+  assert.equal(lines[0].quantity, 2);
+  lines = applyCartChange(lines, { type: "set", productId: "granola", quantity: 9 }, ids, limits);
+  assert.equal(lines[0].quantity, 2);
+  lines = applyCartChange(lines, { type: "add", productId: "honey", quantity: 3 }, ids, limits);
+  assert.equal(lines.find((line) => line.productId === "honey")?.quantity, 1);
 });

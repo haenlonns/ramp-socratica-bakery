@@ -543,6 +543,9 @@ body {
 
 .shopPrice:hover { filter: brightness(0.96); }
 .shopPrice:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+.shopCard--soldOut { filter: grayscale(1); opacity: .62; }
+.shopCard--soldOut .shopCardArt:hover img { transform: none; }
+.shopCard--soldOut .shopPrice:disabled { opacity: 1; background: #e9e6e4; color: #6e6a68; }
 
 .shopDetailPrice {
   /* Same badge as the gallery, scaled up for the larger page. */
@@ -727,7 +730,7 @@ body {
 }
 
 .shopAddToCart:hover { background: rgba(188, 209, 241, 0.5); }
-.shopAddToCart:disabled { opacity: 0.6; cursor: default; }
+.shopAddToCart:disabled { opacity: 0.6; cursor: not-allowed; }
 .shopAddToCart:disabled:hover { background: var(--store-blue-soft); }
 
 .shopAllergens {

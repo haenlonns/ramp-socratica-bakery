@@ -5,6 +5,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { applyCartChange, CART_COOKIE, LAST_ORDER_COOKIE, serializeCart } from "@/lib/store/cart";
 import { readCart } from "@/lib/store/cart-server";
+import { getCurrentUser } from "@/lib/auth";
+import { createMixedStoreCheckout } from "@/lib/orders";
+import { shopAccess } from "@/lib/teams";
+import { getActiveStoreProducts, type StoreProduct } from "@/lib/store/catalog-server";
+
+/** Per-product cap: the team limit, or the remaining stock if that is lower. */
+const limitsFor = (products: StoreProduct[]) =>
+  new Map(products.map((product) => [product.id, Math.min(product.perTeamLimit, product.inventoryQuantity)]));
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -21,16 +29,29 @@ async function write(lines: Awaited<ReturnType<typeof readCart>>) {
 }
 
 export async function addToCart(productId: string, quantity = 1) {
-  await write(applyCartChange(await readCart(), { type: "add", productId, quantity }));
+  const products = await getActiveStoreProducts();
+  const product = products.find((candidate) => candidate.id === productId);
+  if (!product) {
+    throw new Error("That product is no longer available.");
+  }
+  if (product.inventoryQuantity === 0) throw new Error("That product is sold out.");
+  const productIds = new Set(products.map((candidate) => candidate.id));
+  const lines = await readCart(productIds);
+  const existingQuantity = lines.find((line) => line.productId === productId)?.quantity ?? 0;
+  const allowed = Math.min(product.perTeamLimit, product.inventoryQuantity);
+  await write(applyCartChange(lines, { type: "add", productId, quantity: Math.max(0, Math.min(quantity, allowed - existingQuantity)) }, productIds, limitsFor(products)));
 }
 
 /** Sets the exact quantity (0 removes). The reducer clamps it to the per-team limit. */
 export async function setCartQuantity(productId: string, quantity: number) {
-  await write(applyCartChange(await readCart(), { type: "set", productId, quantity }));
+  const products = await getActiveStoreProducts();
+  const productIds = new Set(products.map((product) => product.id));
+  await write(applyCartChange(await readCart(productIds), { type: "set", productId, quantity }, productIds, limitsFor(products)));
 }
 
 export async function removeFromCart(productId: string, quantity = 1) {
-  await write(applyCartChange(await readCart(), { type: "remove", productId, quantity }));
+  const productIds = new Set((await getActiveStoreProducts()).map((product) => product.id));
+  await write(applyCartChange(await readCart(productIds), { type: "remove", productId, quantity }, productIds));
 }
 
 export async function clearCart() {
@@ -38,12 +59,22 @@ export async function clearCart() {
 }
 
 /**
- * Completes the purchase: stashes the lines for the receipt, empties the cart,
- * then sends the shopper to the confirmation page.
+ * Completes the whole mixed cart in one atomic checkout. The database produces
+ * a distinct vendor order, invoice, and Ramp transaction for every area, while
+ * this Store keeps the consolidated cart lines for its single receipt.
  */
 export async function completeOrder() {
-  const lines = await readCart();
+  const productIds = new Set((await getActiveStoreProducts()).map((product) => product.id));
+  const lines = await readCart(productIds);
   if (lines.length === 0) return;
+
+  const user = await getCurrentUser();
+  if (!user) throw new Error("Log in before placing an order.");
+  if (!(await shopAccess(user.teamId)).allowed) {
+    throw new Error("The shop opens after the project deadline for teams with at least three members.");
+  }
+
+  await createMixedStoreCheckout(user.teamId, user.id, user.eventId, lines);
 
   const store = await cookies();
   store.set(LAST_ORDER_COOKIE, serializeCart(lines), COOKIE_OPTIONS);

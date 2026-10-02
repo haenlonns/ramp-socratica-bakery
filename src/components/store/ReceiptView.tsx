@@ -45,7 +45,7 @@ export function ReceiptView({ failure }: { failure?: ReceiptFailure }) {
 
         <div className="receiptActions">
           <Link href={copy.back.href} className="receiptBack">{copy.back.label}</Link>
-          <Link href="/ramp/home" className="receiptBack receiptBack--outline">Back to home</Link>
+          <Link href="/ramp" className="receiptBack receiptBack--outline">Back to home</Link>
         </div>
       </div>
     </div>

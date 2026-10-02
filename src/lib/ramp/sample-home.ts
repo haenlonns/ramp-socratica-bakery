@@ -6,7 +6,7 @@ export const sampleHomeData: HomeData = {
   viewer: { firstName: "Jack", initials: "JA" },
 
   nav: [
-    { id: "home", label: "Home", icon: "sb-home", href: "/ramp/home" },
+    { id: "home", label: "Home", icon: "sb-home", href: "/ramp" },
     { id: "how", label: "How it works", icon: "sb-how", href: "/store" },
     { id: "store", label: "Socratica Store", icon: "sb-store", href: "/store/market" },
   ],
@@ -67,7 +67,6 @@ export const sampleHomeData: HomeData = {
       occurredAtLabel: "Sep 29 at 8:53 p.m.",
       spentFrom: "Ramp x Socratica - Making Dough",
       spentFromOptions: ["Ramp x Socratica - Making Dough", "F26 Sessions", "General Card"],
-      receiptRequired: true,
       memoRequired: true,
       memo: "Craft supplies for community co-working session",
     },
