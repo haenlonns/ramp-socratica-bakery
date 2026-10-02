@@ -7,7 +7,6 @@ import { applyCartChange, CART_COOKIE, LAST_ORDER_COOKIE, serializeCart } from "
 import { readCart } from "@/lib/store/cart-server";
 import { getCurrentUser } from "@/lib/auth";
 import { createMixedStoreCheckout } from "@/lib/orders";
-import { shopAccess } from "@/lib/teams";
 import { getActiveStoreProducts } from "@/lib/store/catalog-server";
 
 const COOKIE_OPTIONS = {
@@ -64,9 +63,6 @@ export async function completeOrder() {
 
   const user = await getCurrentUser();
   if (!user) throw new Error("Log in before placing an order.");
-  if (!(await shopAccess(user.teamId)).allowed) {
-    throw new Error("The shop opens after the project deadline for teams with at least three members.");
-  }
 
   await createMixedStoreCheckout(user.teamId, user.id, user.eventId, lines);
 
