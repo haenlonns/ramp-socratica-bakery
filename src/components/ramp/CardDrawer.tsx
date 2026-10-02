@@ -5,6 +5,7 @@ import type { WalletCard } from "@/lib/ramp/types";
 import { remainingFraction } from "@/lib/ramp/format";
 import { CardFace } from "./CardFace";
 import { CopyButton } from "./CopyButton";
+import { EmptyPurchases } from "./EmptyPurchases";
 import { RampIcon } from "./RampIcon";
 
 const TABS = ["Overview", "Activity"];
@@ -167,7 +168,7 @@ export function CardDrawer({ card, onClose }: { card: WalletCard; onClose: () =>
               </section>
             </>
           ) : (
-            <p className="rampEmpty">There&rsquo;s nothing here yet</p>
+            <EmptyPurchases />
           )}
         </div>
       </div>

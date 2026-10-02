@@ -38,6 +38,11 @@ export async function addToCart(productId: string, quantity = 1) {
   await write(applyCartChange(lines, { type: "add", productId, quantity: Math.max(0, Math.min(quantity, allowed - existingQuantity)) }, productIds));
 }
 
+/** Sets the exact quantity (0 removes). The reducer clamps it to the per-team limit. */
+export async function setCartQuantity(productId: string, quantity: number) {
+  await write(applyCartChange(await readCart(), { type: "set", productId, quantity }));
+}
+
 export async function removeFromCart(productId: string, quantity = 1) {
   const productIds = new Set((await getActiveStoreProducts()).map((product) => product.id));
   await write(applyCartChange(await readCart(productIds), { type: "remove", productId, quantity }, productIds));
