@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRef, useState } from "react";
 import type { IncompleteExpense } from "@/lib/ramp/types";
+import { EmptyPurchases } from "./EmptyPurchases";
 import { RampIcon } from "./RampIcon";
 
 function ExpenseCard({ expense, onSubmit }: { expense: IncompleteExpense; onSubmit?: (id: string) => void }) {
@@ -124,8 +125,8 @@ export function IncompleteExpensesSection({
 }) {
   const [open, setOpen] = useState(true);
 
-  // The section is absent entirely when nothing is incomplete.
-  if (expenses.length === 0) return null;
+  // Nothing pending: show the empty state instead of leaving a gap.
+  if (expenses.length === 0) return <EmptyPurchases className="rampEmpty--feed" />;
 
   return (
     <section className="rampChecklist rampIncomplete">

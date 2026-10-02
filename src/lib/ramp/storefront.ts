@@ -1,4 +1,4 @@
-import { catalogById, type Product } from "../catalog";
+import { productsById, type Product } from "../catalog";
 import { activeTeam, type SimulatorConfig, type Vendor } from "./config";
 import type { ExpenseDetail, IncompleteExpense } from "./types";
 
@@ -19,7 +19,7 @@ export function storefrontVendors(config: SimulatorConfig): VendorStall[] {
     .map((vendor) => ({
       ...vendor,
       products: vendor.productIds
-        .map((id) => catalogById.get(id))
+        .map((id) => productsById.get(id))
         .filter((product): product is Product => Boolean(product)),
     }))
     .filter((stall) => stall.products.length > 0);
@@ -32,7 +32,7 @@ export function vendorForProductId(config: SimulatorConfig, productId: string) {
 /** Server-side total; never trust a browser-supplied amount. */
 export function purchaseTotalCents(lines: PurchaseLine[]) {
   return lines.reduce((total, line) => {
-    const product = catalogById.get(line.productId);
+    const product = productsById.get(line.productId);
     if (!product) throw new Error(`Unknown product: ${line.productId}`);
     if (!Number.isInteger(line.quantity) || line.quantity < 1) {
       throw new Error("Invalid product quantity.");

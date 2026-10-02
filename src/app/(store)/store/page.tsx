@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Grain } from "@/components/store/Grain";
 import { StoreHeader } from "@/components/store/StoreHeader";
 
 const STEPS = [
@@ -27,7 +28,7 @@ export default function StoreAboutPage() {
     <div className="storePage">
       <StoreHeader />
 
-      <main className="storeMain">
+      <main className="storeMain storeMain--about">
         <section className="storeIntro">
           <h1 className="storeHeading">How it works</h1>
           <p className="storeBody">
@@ -42,6 +43,7 @@ export default function StoreAboutPage() {
             <li key={step.n} className="storeStep">
               <span className="storeStepArt">
                 <img src={step.image} alt="" aria-hidden />
+                <Grain />
               </span>
               <span className="storeStepHead">
                 <span className="storeStepNumber">{step.n}</span>

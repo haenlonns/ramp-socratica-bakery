@@ -7,9 +7,14 @@ import { useStoreCart } from "./StoreCart";
 export function StoreHeader({ showCart = false }: { showCart?: boolean }) {
   return (
     <header className="storeHeader">
-      <Link href="/store" className="storeLogo" aria-label="Socratica Store">
-        <img src="/store/logo.svg" alt="" aria-hidden />
-      </Link>
+      <div className="storeLogos">
+        <Link href="/ramp" className="storeLogo" aria-label="Back to Ramp">
+          <img className="storeLogoRamp" src="/store/ramp-logo.svg" alt="" aria-hidden />
+        </Link>
+        <Link href="/store" className="storeLogo" aria-label="Socratica Store">
+          <img src="/store/logo.svg" alt="" aria-hidden />
+        </Link>
+      </div>
 
       <p className="storeTagline">
         <span className="storeRule" aria-hidden />

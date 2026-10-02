@@ -1,7 +1,8 @@
 "use client";
 
-import { catalogById } from "@/lib/catalog";
+import { productsById } from "@/lib/catalog";
 import { useStoreCart } from "./StoreCart";
+import { GrainImage } from "./GrainImage";
 
 /** Bottom tray: one stack per product, labelled on hover. */
 export function CartDock() {
@@ -12,7 +13,7 @@ export function CartDock() {
     <div className="shopDock">
       <ul className="shopDockItems">
         {lines.map((line) => {
-          const product = catalogById.get(line.productId);
+          const product = productsById.get(line.productId);
           if (!product) return null;
           // Stacked thumbnails overlap, so the group widens with quantity.
           const width = 75 + (line.quantity - 1) * 35;
@@ -29,11 +30,9 @@ export function CartDock() {
                 aria-label={`Remove one ${product.name}`}
               >
                 {Array.from({ length: line.quantity }).map((_, i) => (
-                  <img
+                  <GrainImage
                     key={i}
-                    src={`/store/products/${product.id}.png`}
-                    alt=""
-                    aria-hidden
+                    src={`/store/products/${product.id}.svg`}
                     style={{ left: i * 35 }}
                   />
                 ))}

@@ -1,4 +1,4 @@
-import { catalogById } from "../catalog";
+import { productsById } from "../catalog";
 
 /**
  * Cart persistence.
@@ -15,7 +15,9 @@ import { catalogById } from "../catalog";
 export const CART_COOKIE = "socratica_cart";
 /** The lines from the most recent completed order, for the receipt page. */
 export const LAST_ORDER_COOKIE = "socratica_last_order";
-const MAX_QUANTITY = 99;
+/** Hard cap per product, enforced in the reducer so the server action and the
+ *  optimistic client update can never disagree. */
+export const PER_TEAM_LIMIT = 4;
 
 export type CartLine = { productId: string; quantity: number };
 
@@ -32,8 +34,8 @@ export function parseCart(raw: string | undefined): CartLine[] {
       .filter((entry) => typeof entry?.p === "string" && Number.isInteger(entry?.q))
       // Drop anything no longer in the catalogue so a stale cookie cannot
       // resurrect a removed product.
-      .filter((entry) => catalogById.has(entry.p) && entry.q > 0)
-      .map((entry) => ({ productId: entry.p, quantity: Math.min(entry.q, MAX_QUANTITY) }));
+      .filter((entry) => productsById.has(entry.p) && entry.q > 0)
+      .map((entry) => ({ productId: entry.p, quantity: Math.min(entry.q, PER_TEAM_LIMIT) }));
   } catch {
     return [];
   }
@@ -47,21 +49,31 @@ export function serializeCart(lines: CartLine[]) {
 /** Pure reducer, shared by the server action and the optimistic client update. */
 export function applyCartChange(
   lines: CartLine[],
-  change: { type: "add" | "remove"; productId: string; quantity?: number },
+  change: { type: "add" | "remove" | "set"; productId: string; quantity?: number },
 ): CartLine[] {
   const delta = change.quantity ?? 1;
   const existing = lines.find((line) => line.productId === change.productId);
 
+  if (change.type === "set") {
+    if (!productsById.has(change.productId)) return lines;
+    const next = Math.min(Math.max(Math.trunc(change.quantity ?? 0), 0), PER_TEAM_LIMIT);
+    if (next === 0) return lines.filter((line) => line.productId !== change.productId);
+    if (existing) {
+      return lines.map((line) => (line.productId === change.productId ? { ...line, quantity: next } : line));
+    }
+    return [...lines, { productId: change.productId, quantity: next }];
+  }
+
   if (change.type === "add") {
-    if (!catalogById.has(change.productId)) return lines;
+    if (!productsById.has(change.productId)) return lines;
     if (existing) {
       return lines.map((line) =>
         line.productId === change.productId
-          ? { ...line, quantity: Math.min(line.quantity + delta, MAX_QUANTITY) }
+          ? { ...line, quantity: Math.min(line.quantity + delta, PER_TEAM_LIMIT) }
           : line,
       );
     }
-    return [...lines, { productId: change.productId, quantity: Math.min(delta, MAX_QUANTITY) }];
+    return [...lines, { productId: change.productId, quantity: Math.min(delta, PER_TEAM_LIMIT) }];
   }
 
   return lines
@@ -75,7 +87,7 @@ export function cartTotals(lines: CartLine[]) {
   let count = 0;
   let totalCents = 0;
   for (const line of lines) {
-    const product = catalogById.get(line.productId);
+    const product = productsById.get(line.productId);
     if (!product) continue;
     count += line.quantity;
     totalCents += product.priceCents * line.quantity;

@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/lib/catalog";
+import { PER_TEAM_LIMIT } from "@/lib/store/cart";
 import { AllergenAlert } from "./AllergenAlert";
 import { QuantityStepper } from "./QuantityStepper";
 import { useStoreCart } from "./StoreCart";
+import { Grain } from "./Grain";
 
 const money = (cents: number) =>
   cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;
@@ -13,22 +15,27 @@ const money = (cents: number) =>
 export function ProductDetail({
   product,
   areaId,
-  perTeamLimit = 4,
   allergens = "Baked in a facility that uses soy.",
 }: {
   product: Product;
   areaId: string;
-  perTeamLimit?: number;
   allergens?: string;
 }) {
-  const { add } = useStoreCart();
-  const [quantity, setQuantity] = useState(1);
-  const [added, setAdded] = useState(false);
+  const { lines, setQuantity: setCartQuantity } = useStoreCart();
+  const inCart = lines.find((line) => line.productId === product.id)?.quantity ?? 0;
+  // The stepper edits a draft target; with no draft it mirrors the cart.
+  const [draft, setDraft] = useState<number | null>(null);
+  const quantity = draft ?? (inCart || 1);
+  const [flash, setFlash] = useState<string | null>(null);
 
-  function addToCart() {
-    for (let i = 0; i < quantity; i += 1) add(product.id);
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1400);
+  const changed = inCart === 0 || quantity !== inCart;
+  const label = flash ?? (inCart === 0 ? "Add to Cart" : changed ? "Update in cart" : "In cart");
+
+  function commit() {
+    setCartQuantity(product.id, quantity);
+    setDraft(null);
+    setFlash(inCart === 0 ? "Added" : "Updated");
+    window.setTimeout(() => setFlash(null), 1400);
   }
 
   return (
@@ -47,13 +54,13 @@ export function ProductDetail({
             <div className="shopQuantityRow">
               <div>
                 <p className="shopQuantityLabel">Quantity</p>
-                <p className="shopQuantityLimit">Limit of {perTeamLimit} per team.</p>
+                <p className="shopQuantityLimit">Limit of {PER_TEAM_LIMIT} per team.</p>
               </div>
-              <QuantityStepper value={quantity} max={perTeamLimit} onChange={setQuantity} />
+              <QuantityStepper value={quantity} max={PER_TEAM_LIMIT} onChange={setDraft} />
             </div>
 
-            <button type="button" className="shopAddToCart" onClick={addToCart}>
-              {added ? "Added" : "Add to Cart"}
+            <button type="button" className="shopAddToCart" onClick={commit} disabled={!changed}>
+              {label}
             </button>
 
             <AllergenAlert body={allergens} />
@@ -61,7 +68,8 @@ export function ProductDetail({
         </div>
 
         <div className="shopDetailArt">
-          <img src={`/store/products/${product.id}.png`} alt={product.name} />
+          <img src={`/store/products/${product.id}.svg`} alt={product.name} />
+          <Grain />
         </div>
       </div>
     </div>

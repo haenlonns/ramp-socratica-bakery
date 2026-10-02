@@ -15,7 +15,9 @@ export default async function StoreLayout({ children }: Readonly<{ children: Rea
   return (
     <html lang="en">
       <body>
-        <StoreCartProvider lines={lines}>{children}</StoreCartProvider>
+        <StoreCartProvider lines={lines}>
+          {children}
+        </StoreCartProvider>
       </body>
     </html>
   );

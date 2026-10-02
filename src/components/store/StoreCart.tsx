@@ -1,15 +1,16 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useOptimistic, useTransition } from "react";
-import { addToCart, removeFromCart } from "@/app/(store)/cart-actions";
+import { addToCart, removeFromCart, setCartQuantity } from "@/app/(store)/cart-actions";
 import { applyCartChange, cartTotals, type CartLine } from "@/lib/store/cart";
 
-type Change = { type: "add" | "remove"; productId: string; quantity?: number };
+type Change = { type: "add" | "remove" | "set"; productId: string; quantity?: number };
 
 type Ctx = {
   lines: CartLine[];
   add: (productId: string, quantity?: number) => void;
   remove: (productId: string, quantity?: number) => void;
+  setQuantity: (productId: string, quantity: number) => void;
   count: number;
   totalCents: number;
   pending: boolean;
@@ -50,10 +51,20 @@ export function StoreCartProvider({ lines, children }: { lines: CartLine[]; chil
     [applyOptimistic],
   );
 
+  const setQuantity = useCallback(
+    (productId: string, quantity: number) => {
+      startTransition(async () => {
+        applyOptimistic({ type: "set", productId, quantity });
+        await setCartQuantity(productId, quantity);
+      });
+    },
+    [applyOptimistic],
+  );
+
   const value = useMemo(() => {
     const { count, totalCents } = cartTotals(optimisticLines);
-    return { lines: optimisticLines, add, remove, count, totalCents, pending };
-  }, [optimisticLines, add, remove, pending]);
+    return { lines: optimisticLines, add, remove, setQuantity, count, totalCents, pending };
+  }, [optimisticLines, add, remove, setQuantity, pending]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -1,35 +1,52 @@
 import Link from "next/link";
-import { catalogById } from "@/lib/catalog";
-import type { CartLine } from "@/lib/store/cart";
 
-export function ReceiptView({ lines }: { lines: CartLine[] }) {
-  // One thumbnail per distinct product, in the order they were bought.
-  const products = lines
-    .map((line) => catalogById.get(line.productId))
-    .filter((product): product is NonNullable<typeof product> => Boolean(product));
+export type ReceiptFailure = "budget" | "stock";
+
+/** Same layout for every outcome; only the words and the way back change. */
+const COPY = {
+  success: {
+    title: "Thank You :)",
+    body: "All your items should be delivered to you in about 5 minutes! We look forward to seeing what you create with all of these ingredients.",
+    back: { label: "Continue Shopping", href: "/store/market" },
+  },
+  budget: {
+    title: "Out of funds :(",
+    body: "Over-budget, no more funds in your account. Take another look at your cart and try again with fewer items.",
+    back: { label: "Back to Cart", href: "/store/cart" },
+  },
+  stock: {
+    title: "Out of stock :(",
+    body: "One of the items you have selected is out of stock. Swap it out in your cart and try again.",
+    back: { label: "Back to Cart", href: "/store/cart" },
+  },
+} as const;
+
+/** The same four berries on every outcome; they do not reflect the order. */
+const BERRIES = ["blueberry", "strawberry", "raspberry", "blackberry"];
+
+export function ReceiptView({ failure }: { failure?: ReceiptFailure }) {
+  const copy = COPY[failure ?? "success"];
 
   return (
     <div className="receipt">
       <div className="receiptText">
-        <h1 className="storeDisplay">Thank You :)</h1>
-        <p className="receiptBody">
-          All your items should be delivered to you in about 5 minutes! We look forward to seeing
-          what you create with all of these ingredients.
-        </p>
+        <h1 className="storeDisplay">{copy.title}</h1>
+        <p className="receiptBody">{copy.body}</p>
       </div>
 
       <div className="receiptFoot">
-        {products.length > 0 && (
-          <ul className="receiptItems">
-            {products.map((product) => (
-              <li key={product.id}>
-                <img src={`/store/products/${product.id}.png`} alt={product.name} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <ul className="receiptItems" aria-hidden>
+          {BERRIES.map((berry) => (
+            <li key={berry}>
+              <img src={`/store/products/${berry}.svg`} alt="" />
+            </li>
+          ))}
+        </ul>
 
-        <Link href="/store/market" className="receiptBack">Back to Shopping</Link>
+        <div className="receiptActions">
+          <Link href={copy.back.href} className="receiptBack">{copy.back.label}</Link>
+          <Link href="/ramp/home" className="receiptBack receiptBack--outline">Back to home</Link>
+        </div>
       </div>
     </div>
   );

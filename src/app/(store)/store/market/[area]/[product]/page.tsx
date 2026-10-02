@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/store/ProductDetail";
 import { StoreHeader } from "@/components/store/StoreHeader";
-import { catalogById } from "@/lib/catalog";
+import { AREA_TONES } from "@/lib/store/area-tones";
+import { productsById } from "@/lib/catalog";
 import { defaultConfig } from "@/lib/ramp/config";
 
 export function generateStaticParams() {
@@ -17,13 +18,13 @@ export default async function ProductPage({
 }) {
   const { area, product: productId } = await params;
   const vendor = defaultConfig.vendors.find((v) => v.id === area);
-  const product = catalogById.get(productId);
+  const product = productsById.get(productId);
   if (!vendor || !product || !vendor.productIds.includes(productId)) notFound();
 
   return (
     <div className="storePage">
       <StoreHeader showCart />
-      <main className="storeMain shopMain shopMain--wide">
+      <main className={`storeMain shopMain shopMain--wide shopMain--${AREA_TONES[vendor.id] ?? "lilac"}`}>
         <ProductDetail product={product} areaId={vendor.id} />
       </main>
     </div>

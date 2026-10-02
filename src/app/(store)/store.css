@@ -19,6 +19,20 @@
 }
 
 @font-face {
+  font-family: "TWK Lausanne";
+  src: url("/ramp/fonts/twk-lausanne-300.ttf") format("truetype");
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TWK Lausanne";
+  src: url("/ramp/fonts/twk-lausanne-400.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Untitled Sans";
   src: url("/store/fonts/UntitledSans-Regular.otf") format("opentype");
   font-weight: 400;
@@ -42,6 +56,11 @@
   --store-blue: #2c64b7;
   --store-blue-soft: rgba(188, 209, 241, 0.32);
   --store-blue-line: #e8ecf2;
+
+  /* Single vertical rhythm: distance from the header to page content.
+     Figma varies this per page (62–242px); one value keeps the store
+     feeling like one site. */
+  --store-content-top: 64px;
 }
 
 /* ===================================================================
@@ -51,11 +70,14 @@
    =================================================================== */
 
 :root {
-  /* 5by7 — display and chrome */
+  /* 5by7 — chrome and product titles */
   --t-display: 700 30px/1.4 "5by7", monospace;
   --t-card: 700 18px/1.4 "5by7", monospace;
   --t-pixel-label: 400 16px/1 "5by7", monospace;
   --t-chip: 700 10px/0.7 "5by7", monospace;
+
+  /* TWK Lausanne — page headings */
+  --t-heading: 400 26.8px/32px "TWK Lausanne", sans-serif;
 
   /* Untitled Sans — everything else */
   --t-emphasis: 500 20px/1.4 "Untitled Sans", sans-serif;
@@ -78,7 +100,9 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-.storePage { min-height: 100vh; }
+/* flow-root keeps the header's 56px top margin inside the page box; without
+   it the margin collapses out and every page gains 56px of phantom scroll. */
+.storePage { min-height: 100vh; display: flow-root; }
 
 /* Header ----------------------------------------------------------- */
 
@@ -96,8 +120,21 @@ body {
 
 .storeHeader > :last-child { justify-self: end; }
 
-.storeLogo { display: block; line-height: 0; }
+.storeLogos { display: flex; align-items: center; }
+.storeLogo {
+  min-width: 32px;
+  min-height: 32px;
+  padding: 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transition: background-color 140ms ease;
+}
+.storeLogo:hover { background: rgba(42, 41, 40, 0.06); }
 .storeLogo img { width: 15.57px; height: 16.09px; display: block; }
+.storeLogo .storeLogoRamp { width: 16px; height: 16px; }
 
 .storeTagline {
   font: var(--t-chip);
@@ -124,19 +161,21 @@ body {
 
 /* Page body -------------------------------------------------------- */
 
+/* Every page shares the header's 1054px measure so content starts on the same
+   left edge throughout; inner blocks keep their own design widths. */
 .storeMain {
-  width: 1063px;
+  width: 1054px;
   max-width: calc(100% - 48px);
   margin: 0 auto;
-  padding: 131px 0 120px;
+  padding: var(--store-content-top) 0 120px;
 }
 
 .storeIntro { display: flex; flex-direction: column; align-items: flex-start; }
 
 .storeHeading {
-  font: var(--t-display);
+  font: var(--t-heading);
   margin: 0 0 16px;
-  letter-spacing: -0.48px;
+  letter-spacing: -0.56px;
   color: var(--store-ink);
 }
 
@@ -166,6 +205,13 @@ body {
 
 .storeButton:hover { background: rgba(188, 209, 241, 0.5); }
 
+/* About page tuning: values locked in from the old dev sliders. */
+.storeMain--about .storeBody { font-size: var(--about-subtitle-size, 16px); }
+.storeMain--about .storeButton {
+  padding: var(--about-button-py, 8px) var(--about-button-px, 24px);
+}
+.storeMain--about .storeStep { border-radius: var(--about-card-radius, 14px); }
+
 /* How it works ----------------------------------------------------- */
 
 .storeSteps {
@@ -194,6 +240,54 @@ body {
 
 /* The export carries bleed below the frame, so anchor to the top and crop. */
 .storeStepArt img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: top; }
+/* The PNGs also bake in a pale 1px edge, rounded corners, and a cream band
+   from y≈242; scale up from the center so the box clips all four edges. */
+.storeStepArt img { transform: scale(1.06); transform-origin: center; }
+
+/* Grain canvas (see Grain.tsx) fills whichever image frame holds it. */
+.grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+.storeStepArt, .storeScene, .shopDetailArt { position: relative; }
+
+/* Transparent cutout with grain masked to its shape (GrainImage.tsx). */
+.grainImage { position: relative; display: block; }
+.grainImage img { width: 100%; height: 100%; display: block; object-fit: contain; }
+
+/* Dev-only slider panel --------------------------------------------- */
+.storeTuner {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 60;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: #1a1919;
+  color: #fff;
+  font-size: 11px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.storeTuner h2 { margin: 0 0 8px; font-size: 11px; color: #e4f222; font-weight: 500; }
+.storeTuner label { display: grid; grid-template-columns: 96px 130px 44px; gap: 8px; align-items: center; margin-bottom: 4px; }
+.storeTuner output { text-align: right; color: #e4f222; }
+.storeTunerFoot { display: flex; gap: 6px; margin-top: 8px; }
+.storeTunerFoot button {
+  padding: 3px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+.storeTunerFoot button:hover { background: rgba(255, 255, 255, 0.28); }
+
 
 .storeStepHead { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; padding: 0 28px; }
 
@@ -261,8 +355,26 @@ body {
 
 .storeScene img { width: 100%; height: auto; display: block; }
 
+/* Market page tuning: tuned values. */
+.storeMain--market .storeBody { font-size: var(--market-subtitle-size, 16px); }
+.storeMain--market .storeAreas {
+  margin-top: var(--market-areas-gap, 40px);
+  gap: var(--market-card-gap, 16px);
+}
+.storeMain--market .storeArea {
+  padding: var(--market-card-pad-y, 14px) var(--market-card-pad-x, 16px);
+  border-radius: var(--market-card-radius, 4px);
+}
+.storeMain--market .storeScene { border-radius: var(--market-scene-radius, 12px); }
+.storeMain--market .storeAreaBlurb { margin-top: var(--market-blurb-gap, 6px); }
+/* The scene PNG carries its own outline; zoom so the frame clips it. */
+.storeMain--market .storeScene img {
+  transform: scale(var(--market-scene-zoom, 1.04));
+  transform-origin: center;
+}
+
 @media (max-width: 900px) {
-  .storeMain { padding-top: 72px; }
+  .storeMain { padding-top: var(--store-content-top); }
   .storeSteps, .storeAreas { grid-template-columns: 1fr; }
   .storeTagline { display: none; }
 }
@@ -273,55 +385,77 @@ body {
 
 .storeChips { display: flex; align-items: center; justify-content: flex-end; gap: 16px; }
 
-.shopMain { padding-top: 85px; width: 1021px; }
+.shopMain { padding-top: var(--store-content-top); width: 1054px; }
 
 .shopHeading h1 {
-  font: var(--t-display);
-  margin: 0;
-  letter-spacing: -0.48px;
+  font: var(--t-heading);
+  margin: 0 0 16px;
+  letter-spacing: -0.56px;
   color: var(--store-ink);
-  text-transform: uppercase;
 }
 
 .shopHeading p {
-  font: var(--t-body); margin: 8px 0 0; letter-spacing: -0.16px; color: var(--store-body); }
+  font: var(--t-body);
+  font-size: var(--gallery-subtitle-size, 16px);
+  margin: 0;
+  max-width: 462px;
+  letter-spacing: -0.16px;
+  color: var(--store-body);
+}
 
 /* Pay a visit to ---------------------------------------------------- */
 
-.shopVisit { display: flex; align-items: center; gap: 16px; margin-top: 35px; }
+.shopTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+}
+
+.shopVisit { display: flex; align-items: center; gap: var(--gallery-pill-gap, 16px); }
 
 .shopVisitLabel {
-  font: var(--t-pixel-label);
+  font: 400 var(--gallery-subtitle-size, 16px)/1 "Untitled Sans", sans-serif;
   letter-spacing: -0.16px;
   color: var(--store-body);
-  text-transform: uppercase;
 }
 
 .shopPill {
-  font: var(--t-label);
+  font: var(--t-body);
+  font-size: var(--gallery-subtitle-size, 16px);
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-width: 82.3px;
-  padding: 12.389px 15.929px 12.389px 14.159px;
+  gap: 8px;
+  padding: var(--gallery-pill-pad-y, 6px) var(--gallery-pill-pad-x, 20px);
   border-radius: 24px;
   letter-spacing: -0.2832px;
+  color: var(--store-ink);
   text-decoration: none;
-  transition: filter 140ms ease;
+  transition: opacity 140ms ease;
 }
 
-.shopPill:hover { filter: brightness(0.96); }
-.shopPill--lilac { background: rgba(223, 212, 255, 0.7); color: #554f79; }
-.shopPill--peach { background: rgba(255, 135, 82, 0.5); color: #b52506; }
-.shopPill--mint { background: rgba(186, 233, 205, 0.6); color: #1f5c3a; }
+.shopPill--lilac { background: rgba(250, 220, 235, 0.5); } /* fridge */
+.shopPill--peach { background: rgba(255, 235, 195, 0.5); } /* fruits */
+.shopPill--mint { background: rgba(232, 250, 181, 0.5); } /* aisle */
+
+/* Each area page carries its accent (50% fill + dark text shade) for the price tags. */
+.shopMain--mint { --area-accent: rgba(232, 250, 181, 0.5); --area-accent-dark: #55671a; }
+.shopMain--peach { --area-accent: rgba(255, 235, 195, 0.5); --area-accent-dark: #8a5a0a; }
+.shopMain--lilac { --area-accent: rgba(250, 220, 235, 0.5); --area-accent-dark: #a02d62; }
+
+.shopPill img { width: 28px; height: 28px; object-fit: contain; display: block; }
+.shopPill:hover { opacity: 0.65; }
 
 /* Product grid ------------------------------------------------------ */
 
 .shopGrid {
+  width: 1021px;
+  max-width: 100%;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 32.54px;
-  margin-top: 29px;
+  gap: var(--gallery-grid-gap, 32.5px);
+  margin-top: var(--gallery-grid-top, 29px);
 }
 
 .shopCard { display: flex; flex-direction: column; }
@@ -332,8 +466,8 @@ body {
   aspect-ratio: 317.304 / 242.046;
   padding: 0;
   border: 1.017px solid var(--store-cream);
-  border-radius: 12.204px 12.204px 0 0;
-  background: linear-gradient(180deg, rgba(251, 248, 239, 0.92) 53.365%, rgba(188, 209, 241, 0.51) 100%);
+  border-radius: var(--gallery-card-radius, 12px) var(--gallery-card-radius, 12px) 0 0;
+  background: linear-gradient(180deg, var(--area-accent, #fbf8ef) 53%, rgba(188, 209, 241, 0.55) 100%);
   cursor: pointer;
   overflow: hidden;
   position: relative;
@@ -346,6 +480,7 @@ body {
   width: 48.4%;
   height: 63.45%;
   object-fit: contain;
+  scale: var(--gallery-product-scale, 1);
   transition: transform 160ms ease;
 }
 
@@ -356,11 +491,11 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14.238px 17.289px;
+  padding: var(--gallery-info-pad-y, 14px) var(--gallery-info-pad-x, 17px);
   background: #fff;
   border: 1.017px solid var(--store-cream);
   border-top: 0;
-  border-radius: 0 0 12.204px 12.204px;
+  border-radius: 0 0 var(--gallery-card-radius, 12px) var(--gallery-card-radius, 12px);
 }
 
 .shopCardText { display: flex; flex-direction: column; gap: 2.034px; min-width: 0; }
@@ -375,13 +510,17 @@ body {
 .shopCardDesc {
   font: var(--t-caption);
   margin: 0;
-  max-height: 23.391px;
+  /* Always exactly two lines tall so every card matches; extra text is cut. */
+  height: 2.8em;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
   letter-spacing: -0.0814px;
   color: var(--store-body);
 }
-
-.shopPrice {
+.shopPrice,
+.shopDetailPrice {
   font: var(--t-small);
   flex-shrink: 0;
   display: inline-flex;
@@ -391,15 +530,30 @@ body {
   padding: 9.023px 11.601px 9.023px 10.312px;
   border: 0;
   border-radius: 15.468px;
-  background: #f4f0fa;
-  color: #0e0747;
+  background: var(--area-accent, #f4f0fa);
+  color: var(--area-accent-dark, var(--store-ink));
   font: inherit;
+  font-family: "Untitled Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: -0.2578px;
   cursor: pointer;
-  transition: background-color 140ms ease;
+  transition: filter 140ms ease;
 }
 
-.shopPrice:hover { background: #ece5f7; }
+.shopPrice:hover { filter: brightness(0.96); }
+.shopPrice:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+
+.shopDetailPrice {
+  /* Same badge as the gallery, scaled up for the larger page. */
+  --k: 1.5;
+  cursor: default;
+  height: calc(27.283px * var(--k));
+  padding: calc(9.023px * var(--k)) calc(11.601px * var(--k)) calc(9.023px * var(--k)) calc(10.312px * var(--k));
+  border-radius: calc(15.468px * var(--k));
+  font-size: calc(12px * var(--k));
+  letter-spacing: calc(-0.2578px * var(--k));
+}
 
 /* Cart dock --------------------------------------------------------- */
 
@@ -466,7 +620,7 @@ body {
   cursor: pointer;
 }
 
-.shopDockStack img { position: absolute; bottom: 0; width: 75px; height: 75px; object-fit: contain; }
+.shopDockStack .grainImage { position: absolute; bottom: 0; width: 75px; height: 75px; }
 
 @media (max-width: 1100px) {
   .shopMain { width: auto; }
@@ -478,8 +632,8 @@ body {
    =================================================================== */
 
 /* The detail layout is 1049px in the design, wider than the 1021px grid. */
-.shopMain--wide { width: 1049px; }
-.shopDetail { width: 100%; }
+.shopMain--wide { width: 1054px; }
+.shopDetail { width: 1049px; max-width: 100%; }
 
 .shopBack {
   font: var(--t-label);
@@ -507,28 +661,20 @@ body {
 }
 
 .shopDetailInfo { display: flex; flex-direction: column; justify-content: space-between; }
-.shopDetailTop { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; max-width: 315px; }
+.shopDetailTop { display: flex; flex-direction: column; align-items: flex-start; max-width: 315px; }
 
 .shopDetailName {
-  font: var(--t-display);
-  margin: 0;
+  font: 700 30px/1.4 "5by7", monospace; /* product titles keep 5by7 */
+  margin: 0 0 6px;
   letter-spacing: -0.48px;
   color: var(--store-ink);
 }
 
 .shopDetailDesc {
-  font: var(--t-body); margin: -4px 0 0; letter-spacing: -0.16px; color: var(--store-body); }
-
-.shopDetailPrice {
-  font: var(--t-emphasis);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 18px 14px 16px;
-  border-radius: 24px;
-  background: #f4f0fa;
-  color: #0e0747;
-  letter-spacing: -0.4px;
+  font: var(--t-body);
+  margin: 0 0 20px;
+  letter-spacing: -0.16px;
+  color: var(--store-body);
 }
 
 .shopDetailActions { display: flex; flex-direction: column; gap: 24px; width: 432px; max-width: 100%; margin-top: 123px; }
@@ -574,13 +720,15 @@ body {
   border-radius: 24px;
   background: var(--store-blue-soft);
   color: var(--store-blue);
-  font: inherit;
+  line-height: 14px;
   letter-spacing: -0.32px;
   cursor: pointer;
   transition: background-color 140ms ease;
 }
 
 .shopAddToCart:hover { background: rgba(188, 209, 241, 0.5); }
+.shopAddToCart:disabled { opacity: 0.6; cursor: default; }
+.shopAddToCart:disabled:hover { background: var(--store-blue-soft); }
 
 .shopAllergens {
   padding: 12px;
@@ -601,9 +749,8 @@ body {
   overflow: hidden;
   display: grid;
   place-items: center;
-  background:
-    linear-gradient(180deg, rgba(244, 177, 203, 0.32) 0%, rgba(233, 179, 74, 0.32) 100%),
-    linear-gradient(90deg, rgba(251, 248, 239, 0.24) 0%, rgba(251, 248, 239, 0.24) 100%);
+  /* Same gradient as the gallery cards, in the area's accent. */
+  background: linear-gradient(180deg, var(--area-accent, #fbf8ef) 53%, rgba(188, 209, 241, 0.55) 100%);
 }
 
 .shopDetailArt img { width: 60%; height: auto; object-fit: contain; }
@@ -619,90 +766,84 @@ body {
    Checkout — node 124:1797
    =================================================================== */
 
-.checkoutMain { width: 1077px; padding-top: 87px; }
+.checkoutMain { width: 1054px; padding-top: var(--store-content-top); }
 .checkout { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
 
 .storeDisplay {
-  font: var(--t-display);
+  font: var(--t-heading);
   margin: 0;
-  letter-spacing: -0.48px;
+  letter-spacing: -0.56px;
   color: var(--store-ink);
 }
 
 .checkoutGrid {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: 582px 369px;
   justify-content: space-between;
-  gap: 174px;
+  align-items: start;
+  gap: 48px;
   width: 100%;
 }
 
-/* Dimensions scale with --c; type stays on the shared scale so the table
-   matches the rest of the store at any size. */
 .checkoutCart {
-  --c: var(--checkout-cart-scale, 0.85);
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }
 
-/* Shared column template keeps the headers aligned to the rows. */
-.checkoutHead,
+/* Bordered card holding one row per product. */
+.checkoutCard {
+  padding: 20px 24px;
+  border: 1px solid #d2cecb;
+  border-radius: 24px;
+}
+
+.checkoutLines { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 23px; }
+
 .checkoutLine {
-  display: grid;
-  grid-template-columns: calc(262px * var(--c)) calc(170px * var(--c)) 1fr;
+  display: flex;
   align-items: center;
-  gap: calc(48px * var(--c));
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e3e0de;
 }
+.checkoutLine:last-child { padding-bottom: 0; border-bottom: 0; }
 
-.checkoutHead {
-  font: var(--t-body); margin-top: calc(36px * var(--c)); color: var(--store-dark); letter-spacing: -0.16px; text-transform: uppercase; }
-.checkoutHead span:first-child { padding-left: calc(163px * var(--c)); }
+.checkoutItem { display: flex; align-items: center; gap: 24px; }
 
-.checkoutLines { list-style: none; margin: calc(23px * var(--c)) 0 0; padding: 0; }
+.checkoutThumb { width: 75px; height: 75px; flex-shrink: 0; }
 
-.checkoutLine { padding-bottom: calc(12px * var(--c)); border-bottom: 1px solid #e3e0de; }
-.checkoutLine + .checkoutLine { margin-top: calc(23px * var(--c)); }
-
-.checkoutItem { display: flex; align-items: center; gap: calc(88px * var(--c)); }
-
-.checkoutThumb {
-  width: calc(75px * var(--c));
-  height: calc(75px * var(--c));
-  object-fit: contain;
-  flex-shrink: 0;
-}
-
-/* Scoped so the product detail page's stepper keeps its full size. */
-.checkoutCart .shopStepper {
-  gap: calc(12px * var(--c));
-  padding: calc(14px * var(--c)) calc(18px * var(--c)) calc(14px * var(--c)) calc(16px * var(--c));
-}
-
-.checkoutCart .shopStepper button,
-.checkoutCart .shopStepper img { width: calc(16px * var(--c)); height: calc(16px * var(--c)); }
 .checkoutName {
-  font: var(--t-body); letter-spacing: -0.16px; color: var(--store-dark); white-space: nowrap; }
-.checkoutQty { display: flex; }
+  font: var(--t-title); letter-spacing: -0.36px; color: #41403f; white-space: nowrap; }
+
+/* Stepper on the left, price right-aligned in a fixed 218px group. */
+.checkoutRight { width: 218px; display: flex; align-items: center; justify-content: space-between; }
 .checkoutPrice {
-  font: var(--t-body); letter-spacing: -0.16px; color: var(--store-dark); }
+  font: var(--t-body); letter-spacing: -0.16px; color: #2a2928; }
 
 .checkoutEmpty {
-  font: var(--t-body); margin: 36px 0 0; color: var(--store-body); }
+  font: var(--t-body); margin: 0; color: var(--store-body); }
 
 /* Summary ----------------------------------------------------------- */
 
-/* Every dimension below is the design value times --s, so width and height
-   scale together and the text stays crisp (a transform would blur it). */
 .checkoutSummary {
-  --s: var(--checkout-summary-scale, 0.85);
-  width: calc(321px * var(--s));
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--store-surface, #f4f2f0);
 }
 
-.checkoutTotals { margin: calc(64px * var(--s)) 0 0; }
+.checkoutSummary .storeDisplay { font-size: 20px; margin-bottom: 24px; }
+
+.checkoutTotals { margin: 0; display: flex; flex-direction: column; gap: 17px; }
 
 .checkoutSubtotal,
 .checkoutTotal { display: flex; align-items: center; justify-content: space-between; }
 
-.checkoutSubtotal { padding-bottom: calc(13px * var(--s)); border-bottom: 1px solid #e3e0de; }
+.checkoutSubtotal { padding-bottom: 13px; border-bottom: 1px solid #e3e0de; }
 
 .checkoutSubtotal dt, .checkoutSubtotal dd {
   margin: 0;
@@ -710,8 +851,6 @@ body {
   letter-spacing: -0.256px;
   color: #000;
 }
-
-.checkoutTotal { margin-top: calc(17px * var(--s)); }
 
 .checkoutTotal dt, .checkoutTotal dd {
   margin: 0;
@@ -721,12 +860,12 @@ body {
 }
 
 .checkoutRamp {
-  margin-top: calc(40px * var(--s));
   width: 100%;
-  padding: calc(20px * var(--s)) calc(18px * var(--s)) calc(20px * var(--s)) calc(16px * var(--s));
+  padding: 20px 18px 20px 16px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
+  gap: 6px;
   border: 0;
   background: #e4f222;
   cursor: pointer;
@@ -736,42 +875,25 @@ body {
 .checkoutRamp:hover:not(:disabled) { filter: brightness(0.95); }
 .checkoutRamp:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.checkoutRampMark {
-  position: relative;
-  display: block;
-  width: calc(90px * var(--s));
-  height: calc(24.18px * var(--s));
-}
+.checkoutRamp[aria-busy="true"] { align-items: center; cursor: progress; }
+.checkoutRamp:disabled[aria-busy="true"] { opacity: 1; cursor: progress; }
 
-.checkoutRampMark img { position: absolute; display: block; }
-
-.checkoutRampMark img:first-child {
-  left: 0; bottom: 0;
-  width: calc(59.31px * var(--s));
-  height: calc(19.03px * var(--s));
+.checkoutSpinner {
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: checkoutSpin 700ms linear infinite;
 }
+@keyframes checkoutSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .checkoutSpinner { animation-duration: 2s; } }
 
-.checkoutRampMark img:last-child {
-  right: 0; top: 0;
-  width: calc(22.2px * var(--s));
-  height: calc(19.03px * var(--s));
-}
+.checkoutRampLabel { font: var(--t-body); letter-spacing: -0.256px; color: #000; }
 
-.checkoutAltPay {
-  display: block;
-  width: 100%;
-  margin-top: calc(21px * var(--s));
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #3d3d3d;
-  font: var(--t-caption);
-  letter-spacing: -0.24px;
-  text-align: center;
-  text-decoration: underline;
-  text-underline-position: from-font;
-  cursor: pointer;
-}
+.checkoutRampMark { display: block; width: 72px; aspect-ratio: 59 / 17; margin-top: 1px; }
+.checkoutRampMark img { display: block; width: 100%; height: 100%; }
 
 a.storeCart { text-decoration: none; transition: filter 140ms ease; }
 a.storeCart:hover { filter: brightness(0.95); }
@@ -779,56 +901,31 @@ a.storeCart:hover { filter: brightness(0.95); }
 @media (max-width: 1100px) {
   .checkoutMain { width: auto; }
   .checkoutGrid { grid-template-columns: 1fr; gap: 48px; }
-  .checkoutHead, .checkoutLine { grid-template-columns: 1fr auto auto; gap: 16px; }
-  .checkoutHead span:first-child { padding-left: 0; }
-  .checkoutItem { gap: 16px; }
+  .checkoutRight { width: auto; gap: 24px; }
   .checkoutSummary { width: 100%; }
 }
-
-/* Dev-only summary scale slider ------------------------------------- */
-
-.storeTuner {
-  position: fixed;
-  left: 16px;
-  bottom: 16px;
-  z-index: 60;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #1a1919;
-  color: #fff;
-  font-size: 11px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-}
-
-.storeTuner label { display: grid; grid-template-columns: 90px 130px 36px; gap: 8px; align-items: center; margin-bottom: 4px; }
-.storeTuner output { text-align: right; color: #e4f222; }
-.storeTunerFoot { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.storeTunerFoot code { flex: 1; font-size: 10px; color: #b9b4b1; white-space: nowrap; }
-
-.storeTunerFoot button {
-  padding: 3px 8px;
-  border: 0;
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font: inherit;
-  font-size: 10px;
-  cursor: pointer;
-}
-
-.storeTunerFoot button:hover { background: rgba(255, 255, 255, 0.28); }
 
 /* ===================================================================
    Receipt — node 138:1340
    =================================================================== */
 
-.receiptMain { width: 356px; padding-top: 265px; }
-.receipt { display: flex; flex-direction: column; gap: 23px; padding: 10px; }
+.receiptMain {
+  width: 1054px;
+  padding-top: var(--store-content-top);
+  min-height: calc(100vh - 79px);
+  display: flex;
+  align-items: center;
+}
+/* Centred in the design rather than left-aligned, so it keeps its offset. */
+.receipt { width: 356px; margin-left: 349px; display: flex; flex-direction: column; gap: 23px; padding: 10px; }
+/* The thank-you heading keeps 5by7. */
+.receipt .storeDisplay { font: var(--t-display); font-weight: 400; letter-spacing: -0.48px; color: #131313; }
 .receiptText { display: flex; flex-direction: column; gap: 27px; }
 .receiptBody { font: var(--t-body); margin: 0; letter-spacing: -0.16px; color: var(--store-body); }
 
 .receiptFoot { display: flex; flex-direction: column; gap: 63px; }
 
+.receiptActions { display: flex; flex-direction: column; gap: 12px; }
 .receiptItems { list-style: none; display: flex; align-items: center; gap: 37px; margin: 0; padding: 0; }
 .receiptItems img { width: 56px; height: 56px; display: block; object-fit: contain; }
 
@@ -849,6 +946,27 @@ a.storeCart:hover { filter: brightness(0.95); }
 
 .receiptBack:hover { background: #dfe8f8; }
 
+/* Secondary action: outlined, no fill. */
+.receiptBack--outline { background: transparent; border: 1.5px solid #eaf0fb; padding-top: 12.5px; padding-bottom: 12.5px; }
+.receiptBack--outline:hover { background: #eaf0fb; }
+
 @media (max-width: 760px) {
-  .receiptMain { width: auto; padding-top: 120px; }
+  .receiptMain { width: auto; min-height: 0; display: block; }
+  .receipt { width: auto; margin-left: 0; }
 }
+
+/* ===================================================================
+   Design-audit fixes, each behind its own toggle so they can be
+   compared against the current build. Attributes are set on <html> by
+   the dev-only panel; with none set, nothing below applies.
+   =================================================================== */
+
+/* FIX 3 — display weight. Four of six designs set 5by7 Regular; the type
+   scale currently uses Bold everywhere. */
+html[data-fix-weight] { --t-display: 400 30px/1.4 "5by7", monospace; }
+/* About and Gallery are Bold in their designs, so they keep it. */
+html[data-fix-weight] .storeMain--about .storeHeading,
+html[data-fix-weight] .shopHeading h1 { font-weight: 700; }
+
+/* FIX 4 — gallery subtitle leading. Figma specifies leading-none. */
+html[data-fix-leading] .shopHeading p { line-height: 1; }

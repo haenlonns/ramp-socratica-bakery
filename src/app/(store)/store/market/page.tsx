@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Grain } from "@/components/store/Grain";
 import { StoreHeader } from "@/components/store/StoreHeader";
 
 /** The three market areas. Names and copy come from the design. */
@@ -13,7 +14,7 @@ export default function MarketPage() {
     <div className="storePage">
       <StoreHeader />
 
-      <main className="storeMain">
+      <main className="storeMain storeMain--market">
         <section className="storeIntro">
           <h1 className="storeHeading">Welcome to the Market</h1>
           <p className="storeBody">
@@ -35,6 +36,7 @@ export default function MarketPage() {
 
         <div className="storeScene">
           <img src="/store/market.png" alt="The Socratica market stall" />
+          <Grain />
         </div>
       </main>
     </div>

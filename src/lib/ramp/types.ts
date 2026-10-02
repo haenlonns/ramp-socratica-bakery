@@ -5,6 +5,12 @@
 
 export type IconName =
   | "logo-mark-grey"
+  | "sb-toggle"
+  | "sb-logo"
+  | "sb-home"
+  | "sb-how"
+  | "sb-store"
+  | "sb-careers"
   | "nav-home"
   | "nav-expenses"
   | "nav-travel"

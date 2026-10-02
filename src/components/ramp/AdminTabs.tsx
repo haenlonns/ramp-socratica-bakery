@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { catalog } from "@/lib/catalog";
+import { allProducts } from "@/lib/catalog";
 import type { SimulatorConfig, TeamCard, Vendor } from "@/lib/ramp/config";
 import { useRampConfig } from "./RampConfigProvider";
 
@@ -74,7 +74,7 @@ function VendorsTab({ config, update }: { config: SimulatorConfig; update: (c: S
           <fieldset className="rampAdminFieldset">
             <legend>Products</legend>
             <div className="rampAdminChecks">
-              {catalog.map((product) => {
+              {allProducts.map((product) => {
                 const owner = config.vendors.find((v) => v.productIds.includes(product.id));
                 const mine = owner?.id === vendor.id;
                 return (

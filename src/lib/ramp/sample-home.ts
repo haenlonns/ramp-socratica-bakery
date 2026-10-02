@@ -6,10 +6,9 @@ export const sampleHomeData: HomeData = {
   viewer: { firstName: "Jack", initials: "JA" },
 
   nav: [
-    { id: "home", label: "Home", icon: "nav-home", href: "/ramp/home", badge: 5 },
-    { id: "expenses", label: "Expenses", icon: "nav-expenses" },
-    { id: "travel", label: "Travel", icon: "nav-travel" },
-    { id: "manage", label: "Manage", icon: "nav-manage" },
+    { id: "home", label: "Home", icon: "sb-home", href: "/ramp/home" },
+    { id: "how", label: "How it works", icon: "sb-how", href: "/store" },
+    { id: "store", label: "Socratica Store", icon: "sb-store", href: "/store/market" },
   ],
 
   notices: [

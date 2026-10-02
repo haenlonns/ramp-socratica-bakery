@@ -20,18 +20,18 @@ test("each vendor resolves to its own catalogue products", () => {
 });
 
 test("purchase totals come from the catalogue, not the caller", () => {
-  // Bread flour 4800, free-run eggs 1800.
-  assert.equal(purchaseTotalCents([{ productId: "flour", quantity: 2 }]), 9600);
+  // Granola 1500, creamer 700.
+  assert.equal(purchaseTotalCents([{ productId: "granola", quantity: 2 }]), 3000);
   assert.equal(
-    purchaseTotalCents([{ productId: "flour", quantity: 1 }, { productId: "eggs", quantity: 3 }]),
-    4800 + 5400,
+    purchaseTotalCents([{ productId: "granola", quantity: 1 }, { productId: "creamer", quantity: 3 }]),
+    1500 + 2100,
   );
 });
 
 test("purchase totals reject unknown products and bad quantities", () => {
   assert.throws(() => purchaseTotalCents([{ productId: "nope", quantity: 1 }]));
-  assert.throws(() => purchaseTotalCents([{ productId: "flour", quantity: 0 }]));
-  assert.throws(() => purchaseTotalCents([{ productId: "flour", quantity: 1.5 }]));
+  assert.throws(() => purchaseTotalCents([{ productId: "granola", quantity: 0 }]));
+  assert.throws(() => purchaseTotalCents([{ productId: "granola", quantity: 1.5 }]));
 });
 
 test("a purchase becomes an incomplete expense carrying the vendor's memo", () => {
@@ -39,12 +39,12 @@ test("a purchase becomes an incomplete expense carrying the vendor's memo", () =
     id: "p1",
     vendorId: "fridge",
     cardId: "socratica",
-    lines: [{ productId: "butter", quantity: 1 }],
+    lines: [{ productId: "yogurt", quantity: 1 }],
     at: new Date(2026, 8, 29, 20, 53),
   });
   assert.equal(expense.merchantName, "Fridge");
-  assert.equal(expense.memo, "Chilled dairy and eggs");
-  assert.equal(expense.amountCents, 7200);
+  assert.equal(expense.memo, "Chilled dairy and cream");
+  assert.equal(expense.amountCents, 1000);
   assert.equal(expense.receiptRequired, true);
   assert.match(expense.spentFrom, /\(8870\)$/);
 });
