@@ -6,8 +6,16 @@ import { productsById } from "@/lib/catalog";
 import { activeTeam } from "@/lib/ramp/config";
 import { usePurchases, type Purchase } from "@/lib/store/purchases";
 import { EmptyPurchases } from "./EmptyPurchases";
-import { PolicyModal } from "./PolicyModal";
+import { Sheet } from "@/components/ui/Sheet";
+import { markSheetOpened } from "@/lib/use-sheet-param";
 import { useRampConfig } from "./RampConfigProvider";
+
+const POLICY = [
+  "Every team spends from one shared fund, charged to the team's virtual card.",
+  "Up to 4 of any single item per team.",
+  "Items are delivered about 5 minutes after you pay.",
+  "Ingredients are for the bake. No returns, and no refunds on perishables.",
+];
 
 const dollars = (cents: number) =>
   `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -67,7 +75,7 @@ export function TransactionsSection() {
         </div>
         <div className="rampTxActions">
           <Link href="/store/market" className="rampBtn rampBtn--primary">Start Shopping</Link>
-          <Link href="/store" className="rampBtn rampBtn--secondary">How it works</Link>
+          <Link href="/ramp?about" scroll={false} onClick={markSheetOpened} className="rampBtn rampBtn--secondary">How it works</Link>
         </div>
       </div>
 
@@ -81,7 +89,14 @@ export function TransactionsSection() {
         </ul>
       )}
 
-      {policyOpen && <PolicyModal onClose={() => setPolicyOpen(false)} />}
+      <Sheet open={policyOpen} onClose={() => setPolicyOpen(false)} label="Socratica spending policy" inset="sidebar">
+        <div className="rampPolicy">
+          <h2 className="rampPolicyTitle">Socratica spending policy</h2>
+          <ul className="rampPolicyList">
+            {POLICY.map((rule) => <li key={rule}>{rule}</li>)}
+          </ul>
+        </div>
+      </Sheet>
     </section>
   );
 }

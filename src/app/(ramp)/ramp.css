@@ -381,13 +381,11 @@ body {
    viewport when scrolled to the bottom. */
 .rampFeed { flex: 1; min-width: 0; max-width: 905.5px; padding: 32px 56px 16px; }
 
-.rampGreeting {
-  margin: 0 0 16px;
-  font-size: 28px;
-  font-weight: 400;
-  line-height: 32px;
-  letter-spacing: -0.56px;
-}
+/* Homescreen frame: 74.7px of space where a top bar would be, and the feed
+   sits 125px in from the sidebar edge (node 203:8202). */
+.rampMain--bare .rampFeed { padding-top: 106.7px; margin-left: 125px; }
+
+.rampGreeting { margin: 0 0 31px; font: var(--t-heading); letter-spacing: -0.56px; }
 
 /* Notice --------------------------------------------------------- */
 
@@ -584,6 +582,7 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   .rampHomeGrid { flex-direction: column; }
   .rampWallet { width: 100%; padding: 0 56px 40px; }
   .rampFeed { max-width: none; }
+  .rampMain--bare .rampFeed { margin-left: 0; }
 }
 
 @media (max-width: 760px) {
@@ -1031,7 +1030,7 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   text-align: center;
 }
 .rampEmpty--feed { margin: 32px 0 0; }
-.rampEmpty--tx { margin: 12px 0 0; min-height: 277px; }
+.rampEmpty--tx { margin: 0; min-height: 277px; }
 .rampEmptyArt { width: 116px; height: auto; display: block; }
 .rampEmptyText { display: flex; flex-direction: column; align-items: center; }
 .rampEmptyTitle { margin: 0; font-size: 15.3px; font-weight: 300; line-height: 24px; color: var(--ramp-grey-10); }
@@ -1715,8 +1714,8 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
 
 /* Home: transactions, card balance and insights ------------------------ */
 
-.rampTx { margin-top: 12px; }
-.rampTxHead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.rampTx { margin-top: 0; }
+.rampTxHead { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 46px; margin-bottom: 24px; }
 .rampTxTitle { margin: 0; font-size: 15.1px; font-weight: 400; line-height: 24px; letter-spacing: -0.32px; }
 .rampTxIntro { margin: 2px 0 0; font-size: 13.2px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
 .rampTxPolicy {
@@ -1770,9 +1769,9 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
 }
 .rampTxBadge img { width: 12px; height: 12px; display: block; }
 
-.rampHomeCols { display: flex; gap: 32px; margin-top: 48px; padding-bottom: 40px; }
+.rampHomeCols { display: flex; gap: 32px; margin-top: 56px; padding-bottom: 40px; }
 .rampHomeCol { flex: 1; min-width: 0; }
-.rampColHead { display: flex; align-items: center; justify-content: space-between; padding: 8px; }
+.rampColHead { display: flex; align-items: center; justify-content: space-between; padding: 8px; margin-bottom: 8px; }
 .rampColTitle { font-size: 13.6px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
 .rampColLink {
   padding: 0;
@@ -1819,24 +1818,8 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   background: linear-gradient(180deg, rgba(118, 147, 210, 0.5), rgba(118, 147, 210, 0));
 }
 
-.rampModalBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  background: rgba(26, 25, 25, 0.4);
-}
-.rampModal {
-  position: relative;
-  width: min(480px, calc(100% - 48px));
-  padding: 32px;
-  border-radius: 8px;
-  background: var(--ramp-white);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
-}
-.rampModalTitle { margin: 0 0 16px; font-size: 20px; font-weight: 400; line-height: 28px; letter-spacing: -0.4px; }
-.rampModalList { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 15px; font-weight: 300; line-height: 22px; color: var(--ramp-grey-10); }
+.rampPolicyTitle { margin: 0 0 16px; font: var(--t-heading); letter-spacing: -0.56px; }
+.rampPolicyList { margin: 0; padding-left: 20px; max-width: 462px; display: flex; flex-direction: column; gap: 8px; font: var(--t-body); color: var(--store-body); }
 
 @media (max-width: 760px) {
   .rampTxHead { flex-direction: column; align-items: flex-start; }

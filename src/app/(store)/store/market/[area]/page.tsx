@@ -3,11 +3,11 @@ import { AreaHeading } from "@/components/store/AreaHeading";
 import { CartDock } from "@/components/store/CartDock";
 import { GalleryTuner } from "@/components/store/GalleryTuner";
 import { ProductCard } from "@/components/store/ProductCard";
+import { ProductSheet } from "@/components/store/ProductSheet";
 import { StoreHeader } from "@/components/store/StoreHeader";
 import { VisitPills, type VisitTarget } from "@/components/store/VisitPills";
 import { AREA_TONES } from "@/lib/store/area-tones";
-import { productsById } from "@/lib/catalog";
-import { defaultConfig } from "@/lib/ramp/config";
+import { getActiveStoreProducts, getActiveStoreVendors } from "@/lib/store/catalog-server";
 
 const COPY: Record<string, { title: string; blurb: string }> = {
   aisle: { title: "The Aisle", blurb: "Be careful when reaching for the upper shelves!" },
@@ -15,39 +15,39 @@ const COPY: Record<string, { title: string; blurb: string }> = {
   fridge: { title: "The Fridge", blurb: "Mind the cold — shut the door behind you." },
 };
 
-export function generateStaticParams() {
-  return defaultConfig.vendors.map((vendor) => ({ area: vendor.id }));
-}
-
 export default async function AreaPage({ params }: { params: Promise<{ area: string }> }) {
   const { area } = await params;
-  const vendor = defaultConfig.vendors.find((v) => v.id === area);
+  const [products, vendors] = await Promise.all([getActiveStoreProducts(), getActiveStoreVendors()]);
+  const vendor = vendors.find((vendor) => vendor.slug === area);
   if (!vendor) notFound();
 
-  const products = vendor.productIds
-    .map((id) => productsById.get(id))
-    .filter((product): product is NonNullable<typeof product> => Boolean(product));
+  const vendorProducts = products.filter((product) => product.vendorSlug === vendor.slug);
+  const artFor = (slug: string) => {
+    const first = products.find((product) => product.vendorSlug === slug);
+    return `/store/products/${first?.imageFilename ?? `${first?.id}.svg`}`;
+  };
 
-  // The other two areas, for the "pay a visit to" pills.
-  const others: VisitTarget[] = defaultConfig.vendors
-    .filter((v) => v.id !== vendor.id)
-    .map((v) => ({ id: v.id, name: v.name, image: `/store/products/${v.productIds[0]}.svg`, tone: AREA_TONES[v.id] ?? "lilac" }));
+  // The other areas, for the "pay a visit to" pills.
+  const others: VisitTarget[] = vendors
+    .filter((other) => other.slug !== vendor.slug)
+    .map((other) => ({ id: other.slug, name: other.name, image: artFor(other.slug), tone: AREA_TONES[other.slug] ?? "lilac" }));
 
-  const copy = COPY[vendor.id] ?? { title: vendor.name, blurb: vendor.blurb ?? "" };
+  const copy = COPY[vendor.slug] ?? { title: vendor.name, blurb: "" };
 
   return (
     <div className="storePage">
       <StoreHeader showCart />
-      <main className={`storeMain shopMain shopMain--${AREA_TONES[vendor.id] ?? "lilac"}`}>
+      <main className={`storeMain shopMain shopMain--${AREA_TONES[vendor.slug] ?? "lilac"}`}>
         <div className="shopTop">
           <AreaHeading title={copy.title} blurb={copy.blurb} />
           <VisitPills targets={others} />
         </div>
         <div className="shopGrid">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} areaId={vendor.id} />
+          {vendorProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
+        <ProductSheet />
       </main>
       <CartDock />
       <GalleryTuner />

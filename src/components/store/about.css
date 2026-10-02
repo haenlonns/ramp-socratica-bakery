@@ -1,0 +1,69 @@
+/* "How it works" content: the About sheet and the /store page (node 203:8349). */
+
+.about { width: 100%; }
+
+.aboutIntro { display: flex; flex-direction: column; align-items: flex-start; }
+.aboutHeading { font: var(--t-heading); margin: 0 0 16px; letter-spacing: -0.56px; color: var(--store-ink); }
+.aboutBody { font: var(--t-body); margin: 0; max-width: 462px; letter-spacing: -0.16px; color: var(--store-body); }
+.aboutStart { margin-top: 24px; padding-inline: 24px; }
+
+.aboutSteps {
+  list-style: none;
+  margin: 78px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 333px));
+  gap: 32px;
+}
+
+.aboutStep {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--store-cream);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fdfcf8;
+}
+
+.aboutStepArt { position: relative; display: block; aspect-ratio: 333 / 245; overflow: hidden; }
+
+/* The PNGs carry bleed (a pale 1px edge, rounded corners and a cream band from
+   y~242), so anchor to the top and scale from the center to crop all of it. */
+.aboutStepArt img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: top;
+  transform: scale(1.06);
+}
+
+.aboutStepHead { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; padding: 0 28px; }
+
+.aboutStepNumber {
+  font: var(--t-mono-number);
+  letter-spacing: 2.4px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--store-cream);
+  color: var(--store-body);
+}
+
+.aboutStepTitle { font: var(--t-title); letter-spacing: -0.36px; color: var(--store-ink); }
+
+.aboutStepBody {
+  font: var(--t-body);
+  margin: 12px 0 0;
+  padding: 0 28px 28px;
+  max-width: 289px;
+  letter-spacing: -0.16px;
+  color: var(--store-body);
+}
+
+@media (max-width: 1100px) {
+  .aboutSteps { grid-template-columns: 1fr; }
+}

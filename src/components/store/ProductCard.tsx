@@ -2,43 +2,34 @@
 
 import Link from "next/link";
 import type { Product } from "@/lib/catalog";
-import { PER_TEAM_LIMIT } from "@/lib/store/cart";
-import { useStoreCart } from "./StoreCart";
+import { PricePill } from "@/components/ui/PricePill";
+import { markSheetOpened } from "@/lib/use-sheet-param";
 import { Grain } from "./Grain";
 
-const money = (cents: number) =>
-  cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;
-
-export function ProductCard({ product, areaId }: { product: Product; areaId: string }) {
-  const { add, lines } = useStoreCart();
-  const atLimit = (lines.find((line) => line.productId === product.id)?.quantity ?? 0) >= PER_TEAM_LIMIT;
+/** The whole card is a link: it opens the product sheet at `?item=<id>`. */
+export function ProductCard({ product }: { product: Product }) {
+  const soldOut = product.inventoryQuantity === 0;
 
   return (
-    <article className="shopCard">
-      <Link
-        href={`/store/market/${areaId}/${product.id}`}
-        className="shopCardArt"
-        aria-label={`View ${product.name}`}
-      >
-        <img src={`/store/products/${product.id}.svg`} alt="" aria-hidden />
+    <Link
+      href={`?item=${product.id}`}
+      scroll={false}
+      onClick={markSheetOpened}
+      className={soldOut ? "shopCard shopCard--soldOut" : "shopCard"}
+      aria-label={`${product.name}, view details`}
+    >
+      <span className="shopCardArt">
+        <img src={`/store/products/${product.imageFilename ?? `${product.id}.svg`}`} alt="" aria-hidden />
         <Grain />
-      </Link>
+      </span>
 
-      <div className="shopCardInfo">
-        <div className="shopCardText">
+      <span className="shopCardInfo">
+        <span className="shopCardText">
           <h2 className="shopCardName">{product.name}</h2>
           <p className="shopCardDesc">{product.description}</p>
-        </div>
-        <button
-          type="button"
-          className="shopPrice"
-          onClick={() => add(product.id)}
-          disabled={atLimit}
-          aria-label={atLimit ? `${product.name}: limit of ${PER_TEAM_LIMIT} reached` : `Add ${product.name} to cart`}
-        >
-          {money(product.priceCents)}
-        </button>
-      </div>
-    </article>
+        </span>
+        <PricePill cents={product.priceCents} soldOut={soldOut} />
+      </span>
+    </Link>
   );
 }
