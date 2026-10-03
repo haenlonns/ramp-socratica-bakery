@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { WalletCard } from "@/lib/ramp/types";
+import type { HomeTransaction, WalletCard } from "@/lib/ramp/types";
 import { CardFace } from "./CardFace";
 import { CopyButton } from "./CopyButton";
 import { EmptyPurchases } from "./EmptyPurchases";
 import { RampIcon } from "./RampIcon";
+import { TransactionList } from "./TransactionsSection";
 
 const TABS = ["Overview", "Activity"];
 
@@ -43,7 +44,7 @@ function WhatsIssued({ facts }: { facts: { icon: Parameters<typeof RampIcon>[0][
   );
 }
 
-export function CardDrawer({ card, onClose }: { card: WalletCard; onClose: () => void }) {
+export function CardDrawer({ card, transactions = [], who = "", program = "", onClose }: { card: WalletCard; transactions?: HomeTransaction[]; who?: string; program?: string; onClose: () => void }) {
   const [tab, setTab] = useState(TABS[0]);
   const panel = useRef<HTMLDivElement>(null);
 
@@ -168,7 +169,7 @@ export function CardDrawer({ card, onClose }: { card: WalletCard; onClose: () =>
               </section>
             </>
           ) : (
-            <EmptyPurchases />
+            transactions.length > 0 ? <TransactionList transactions={transactions} who={who} program={program} /> : <EmptyPurchases />
           )}
         </div>
       </div>

@@ -1771,6 +1771,10 @@ a.rampTxRow:hover { background: var(--ramp-grey-98); }
   place-items: center;
 }
 .rampTxAvatarArt { width: 23px; height: 23px; display: block; }
+/* Solid versions of the market accents (--area-accent in store.css: aisle mint, fruits peach, fridge lilac). */
+.rampTxAvatar--aisle { background: #e8fab5; }
+.rampTxAvatar--fruits { background: #ffebc3; }
+.rampTxAvatar--fridge { background: #fadceb; }
 .rampTxBadge {
   position: absolute;
   right: -6px;

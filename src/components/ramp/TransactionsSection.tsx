@@ -27,11 +27,21 @@ function ago(at: number) {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
-/** Stand-in art per market area, so each row's avatar reflects where the money went. */
-const VENDOR_ART: Record<string, string> = { aisle: "granola", fruits: "strawberry", fridge: "yogurt" };
-const artFor = (merchant: string) => `/store/products/${VENDOR_ART[merchant.toLowerCase()] ?? "blueberry"}.svg`;
+/**
+ * Stand-in art per market area, so each row's avatar reflects where the money went.
+ * The drawings sit off-centre in their 238px canvases, so `dx`/`dy` (percent of the
+ * image) nudge each one back to the middle of the circle.
+ */
+const VENDOR_ART: Record<string, { art: string; dx: number; dy: number }> = {
+  aisle: { art: "granola", dx: -5.5, dy: 2.3 },
+  fruits: { art: "strawberry", dx: 2.5, dy: 4 },
+  fridge: { art: "yogurt", dx: 4, dy: 3.4 },
+};
+const FALLBACK_ART = { art: "blueberry", dx: -2.3, dy: -2.5 };
 
 function Row({ transaction, who, program }: { transaction: HomeTransaction; who: string; program: string }) {
+  const vendor = transaction.merchantName.toLowerCase();
+  const { art, dx, dy } = VENDOR_ART[vendor] ?? FALLBACK_ART;
   const content = (
     <>
       <div>
@@ -42,8 +52,8 @@ function Row({ transaction, who, program }: { transaction: HomeTransaction; who:
         <p className="rampTxMain">{who}</p>
         <p className="rampTxSub rampTxSub--strong">{program}</p>
       </div>
-      <span className="rampTxAvatar">
-        <img className="rampTxAvatarArt" src={artFor(transaction.merchantName)} alt="" aria-hidden />
+      <span className={`rampTxAvatar${VENDOR_ART[vendor] ? ` rampTxAvatar--${vendor}` : ""}`}>
+        <img className="rampTxAvatarArt" src={`/store/products/${art}.svg`} style={{ transform: `translate(${dx}%, ${dy}%)` }} alt="" aria-hidden />
         <span className="rampTxBadge"><img src="/ramp/icons/shield-check.svg" alt="" aria-hidden /></span>
       </span>
     </>
@@ -52,6 +62,16 @@ function Row({ transaction, who, program }: { transaction: HomeTransaction; who:
     <li>
       {transaction.orderId ? <Link href={`/invoices/${transaction.orderId}`} className="rampTxRow">{content}</Link> : <div className="rampTxRow">{content}</div>}
     </li>
+  );
+}
+
+export function TransactionList({ transactions, who, program }: { transactions: HomeTransaction[]; who: string; program: string }) {
+  return (
+    <ul className="rampTxList">
+      {transactions.map((transaction) => (
+        <Row key={transaction.id} transaction={transaction} who={who} program={program} />
+      ))}
+    </ul>
   );
 }
 
@@ -77,11 +97,7 @@ export function TransactionsSection({ transactions, who, program }: { transactio
       {transactions.length === 0 ? (
         <EmptyPurchases className="rampEmpty--tx" />
       ) : (
-        <ul className="rampTxList">
-          {transactions.map((transaction) => (
-            <Row key={transaction.id} transaction={transaction} who={who} program={program} />
-          ))}
-        </ul>
+        <TransactionList transactions={transactions} who={who} program={program} />
       )}
 
       <Sheet open={policyOpen} onClose={() => setPolicyOpen(false)} label="Socratica spending policy" inset="sidebar">

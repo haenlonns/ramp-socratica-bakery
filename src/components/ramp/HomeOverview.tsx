@@ -35,7 +35,7 @@ function SpendChart({ totals }: { totals: number[] }) {
   );
 }
 
-export function HomeOverview({ card, transactions }: { card?: WalletCard; transactions: HomeTransaction[] }) {
+export function HomeOverview({ card, transactions, who, program }: { card?: WalletCard; transactions: HomeTransaction[]; who: string; program: string }) {
   const [drawer, setDrawer] = useState(false);
 
   // The card carries the live fund: remaining already reflects every posted purchase.
@@ -98,7 +98,7 @@ export function HomeOverview({ card, transactions }: { card?: WalletCard; transa
         </div>
       </div>
 
-      {drawer && card && <CardDrawer card={card} onClose={() => setDrawer(false)} />}
+      {drawer && card && <CardDrawer card={card} transactions={transactions} who={who} program={program} onClose={() => setDrawer(false)} />}
     </div>
   );
 }

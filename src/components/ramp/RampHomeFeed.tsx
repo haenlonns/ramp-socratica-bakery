@@ -16,7 +16,7 @@ export function RampHomeFeed({ data, card, transactions, teamName }: { data: Hom
       </h1>
 
       <TransactionsSection transactions={transactions} who={viewer.firstName} program={teamName ?? ""} />
-      <HomeOverview card={card} transactions={transactions} />
+      <HomeOverview card={card} transactions={transactions} who={viewer.firstName} program={teamName ?? ""} />
       <AboutSheet />
     </div>
   );
