@@ -79,7 +79,7 @@ export function spentCents(purchases: Purchase[]) {
   return purchases.reduce((sum, purchase) => sum + purchase.totalCents, 0);
 }
 
-export function recordPurchase(lines: Purchase["lines"], totalCents: number): string {
+export function recordPurchase(lines: Purchase["lines"], totalCents: number) {
   const purchase: Purchase = {
     id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
     at: Date.now(),
@@ -87,12 +87,6 @@ export function recordPurchase(lines: Purchase["lines"], totalCents: number): st
     totalCents,
   };
   write([purchase, ...getSnapshot()].slice(0, 20));
-  return purchase.id;
-}
-
-/** Undo a recorded purchase, e.g. when the server then rejects the order. */
-export function removePurchase(id: string) {
-  write(getSnapshot().filter((purchase) => purchase.id !== id));
 }
 
 export function clearPurchases() {

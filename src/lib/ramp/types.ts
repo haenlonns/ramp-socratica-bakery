@@ -150,10 +150,22 @@ export type HomeData = {
   nav: NavItem[];
   notices: Notice[];
   checklist: { title: string; tasks: ChecklistTask[] };
+  transactions: RampTransaction[];
   /** Section renders only when this is non-empty. */
   incompleteExpenses: IncompleteExpense[];
   /** Omit viewAllHref to render an inert "View all" that does not navigate. */
   wallet: { title: string; viewAllHref?: string; cards: WalletCard[] };
+};
+
+/** A posted workshop-card charge, optionally linked to its supplier invoice. */
+export type RampTransaction = {
+  id: string;
+  merchantName: string;
+  amountCents: number;
+  currency: string;
+  occurredAtLabel: string;
+  invoiceHref?: string;
+  invoiceNumber?: string;
 };
 
 /** One labelled row in the expense Details grid. */

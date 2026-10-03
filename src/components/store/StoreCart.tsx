@@ -14,8 +14,8 @@ type Ctx = {
   setQuantity: (productId: string, quantity: number) => void;
   count: number;
   totalCents: number;
-  productsById: Map<string, StoreProduct>;
   pending: boolean;
+  productsById: Map<string, StoreProduct>;
 };
 
 const CartContext = createContext<Ctx | null>(null);
@@ -28,27 +28,19 @@ const CartContext = createContext<Ctx | null>(null);
  * a click feels instant and then reconciles when the action returns.
  */
 export function StoreCartProvider({ lines, products, children }: { lines: CartLine[]; products: StoreProduct[]; children: React.ReactNode }) {
-  const productIds = useMemo(() => new Set(products.map((product) => product.id)), [products]);
-  // Same per-product cap the server action applies: team limit or remaining stock.
-  const limits = useMemo(
-    () => new Map(products.map((product) => [product.id, Math.min(product.perTeamLimit, product.inventoryQuantity)])),
-    [products],
-  );
   const [optimisticLines, applyOptimistic] = useOptimistic(lines, (state: CartLine[], change: Change) =>
-    applyCartChange(state, change, productIds, limits),
+    applyCartChange(state, change, new Set(products.map((product) => product.id))),
   );
   const [pending, startTransition] = useTransition();
 
   const add = useCallback(
     (productId: string, quantity = 1) => {
-      const product = products.find((candidate) => candidate.id === productId);
-      if (!product || product.inventoryQuantity === 0) return;
       startTransition(async () => {
         applyOptimistic({ type: "add", productId, quantity });
         await addToCart(productId, quantity);
       });
     },
-    [applyOptimistic, products],
+    [applyOptimistic],
   );
 
   const remove = useCallback(
@@ -72,10 +64,9 @@ export function StoreCartProvider({ lines, products, children }: { lines: CartLi
   );
 
   const value = useMemo(() => {
-    const productsById = new Map(products.map((product) => [product.id, product]));
-    const { count, totalCents } = cartTotals(optimisticLines, new Map(products.map((product) => [product.id, product.priceCents])));
-    return { lines: optimisticLines, add, remove, setQuantity, count, totalCents, pending, productsById };
-  }, [optimisticLines, products, add, remove, setQuantity, pending]);
+    const { count, totalCents } = cartTotals(optimisticLines, products);
+    return { lines: optimisticLines, add, remove, setQuantity, count, totalCents, pending, productsById: new Map(products.map((product) => [product.id, product])) };
+  }, [optimisticLines, add, remove, setQuantity, pending, products]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

@@ -58,7 +58,7 @@ export default async function AdminPage() {
   }));
 
   return (
-    <RampAppShell nav={sampleHomeData.nav}>
+    <RampAppShell nav={sampleHomeData.nav} viewer={sampleHomeData.viewer}>
       <AdminTabs
         teams={teams}
         admins={admins}

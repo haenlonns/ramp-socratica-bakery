@@ -4,8 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import type { WalletCard } from "@/lib/ramp/types";
 import { formatCardAmount, remainingFraction } from "@/lib/ramp/format";
-import { walletCardsFor } from "@/lib/ramp/from-config";
-import { useRampConfig } from "./RampConfigProvider";
 import { CardDrawer } from "./CardDrawer";
 import { RampButton } from "./RampButton";
 
@@ -64,13 +62,13 @@ function CardRow({ card, onOpen }: { card: WalletCard; onOpen: (id: string) => v
 
 export function WalletPanel({
   title,
+  cards,
   viewAllHref,
 }: {
   title: string;
+  cards: WalletCard[];
   viewAllHref?: string;
 }) {
-  const { config } = useRampConfig();
-  const cards = walletCardsFor(config);
   const [openId, setOpenId] = useState<string | null>(null);
   const openCard = cards.find((card) => card.id === openId) ?? null;
 

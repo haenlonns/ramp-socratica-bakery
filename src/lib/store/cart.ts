@@ -1,4 +1,4 @@
-import { catalogById } from "../catalog";
+import { productsById } from "../catalog";
 
 /**
  * Cart persistence.
@@ -15,17 +15,16 @@ import { catalogById } from "../catalog";
 export const CART_COOKIE = "socratica_cart";
 /** The lines from the most recent completed order, for the receipt page. */
 export const LAST_ORDER_COOKIE = "socratica_last_order";
-/** Default cap per product when the catalogue does not say otherwise. */
+/** Hard cap per product, enforced in the reducer so the server action and the
+ *  optimistic client update can never disagree. */
 export const PER_TEAM_LIMIT = 4;
-/** Sanity ceiling for anything read back from a cookie. */
-const MAX_QUANTITY = 99;
 
 export type CartLine = { productId: string; quantity: number };
 
 /** Stored compactly; a cookie is capped at ~4KB. */
 type StoredLine = { p: string; q: number };
 
-export function parseCart(raw: string | undefined, productIds = new Set(catalogById.keys())): CartLine[] {
+export function parseCart(raw: string | undefined, productIds?: Set<string>): CartLine[] {
   if (!raw) return [];
   try {
     const parsed: unknown = JSON.parse(raw);
@@ -35,8 +34,8 @@ export function parseCart(raw: string | undefined, productIds = new Set(catalogB
       .filter((entry) => typeof entry?.p === "string" && Number.isInteger(entry?.q))
       // Drop anything no longer in the catalogue so a stale cookie cannot
       // resurrect a removed product.
-      .filter((entry) => productIds.has(entry.p) && entry.q > 0)
-      .map((entry) => ({ productId: entry.p, quantity: Math.min(entry.q, MAX_QUANTITY) }));
+      .filter((entry) => (productIds ? productIds.has(entry.p) : productsById.has(entry.p)) && entry.q > 0)
+      .map((entry) => ({ productId: entry.p, quantity: Math.min(entry.q, PER_TEAM_LIMIT) }));
   } catch {
     return [];
   }
@@ -47,26 +46,18 @@ export function serializeCart(lines: CartLine[]) {
   return JSON.stringify(stored);
 }
 
-/**
- * Pure reducer, shared by the server action and the optimistic client update.
- *
- * `limits` caps each product (per-team limit, or less if stock is lower); the
- * same cap applies on the server and in the optimistic update, so they can
- * never disagree. Products without an entry fall back to PER_TEAM_LIMIT.
- */
+/** Pure reducer, shared by the server action and the optimistic client update. */
 export function applyCartChange(
   lines: CartLine[],
   change: { type: "add" | "remove" | "set"; productId: string; quantity?: number },
-  productIds = new Set(catalogById.keys()),
-  limits?: Map<string, number>,
+  productIds?: Set<string>,
 ): CartLine[] {
   const delta = change.quantity ?? 1;
   const existing = lines.find((line) => line.productId === change.productId);
-  const cap = limits?.get(change.productId) ?? PER_TEAM_LIMIT;
 
   if (change.type === "set") {
-    if (!productIds.has(change.productId)) return lines;
-    const next = Math.min(Math.max(Math.trunc(change.quantity ?? 0), 0), cap);
+    if (!(productIds ? productIds.has(change.productId) : productsById.has(change.productId))) return lines;
+    const next = Math.min(Math.max(Math.trunc(change.quantity ?? 0), 0), PER_TEAM_LIMIT);
     if (next === 0) return lines.filter((line) => line.productId !== change.productId);
     if (existing) {
       return lines.map((line) => (line.productId === change.productId ? { ...line, quantity: next } : line));
@@ -75,15 +66,15 @@ export function applyCartChange(
   }
 
   if (change.type === "add") {
-    if (!productIds.has(change.productId)) return lines;
+    if (!(productIds ? productIds.has(change.productId) : productsById.has(change.productId))) return lines;
     if (existing) {
       return lines.map((line) =>
         line.productId === change.productId
-          ? { ...line, quantity: Math.min(line.quantity + delta, cap) }
+          ? { ...line, quantity: Math.min(line.quantity + delta, PER_TEAM_LIMIT) }
           : line,
       );
     }
-    return [...lines, { productId: change.productId, quantity: Math.min(delta, cap) }];
+    return [...lines, { productId: change.productId, quantity: Math.min(delta, PER_TEAM_LIMIT) }];
   }
 
   return lines
@@ -93,17 +84,14 @@ export function applyCartChange(
     .filter((line) => line.quantity > 0);
 }
 
-export function cartTotals(
-  lines: CartLine[],
-  pricesByProductId = new Map([...catalogById.entries()].map(([id, product]) => [id, product.priceCents])),
-) {
+export function cartTotals(lines: CartLine[], products?: Array<{ id: string; priceCents: number }>) {
   let count = 0;
   let totalCents = 0;
   for (const line of lines) {
-    const priceCents = pricesByProductId.get(line.productId);
-    if (priceCents === undefined) continue;
+    const product = products?.find((candidate) => candidate.id === line.productId) ?? productsById.get(line.productId);
+    if (!product) continue;
     count += line.quantity;
-    totalCents += priceCents * line.quantity;
+    totalCents += product.priceCents * line.quantity;
   }
   return { count, totalCents };
 }

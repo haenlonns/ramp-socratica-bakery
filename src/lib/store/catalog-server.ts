@@ -1,13 +1,22 @@
-import { catalog, fallbackAreaById, fallbackVendors, type Product } from "@/lib/catalog";
+import { catalog, type Product } from "@/lib/catalog";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-export type StoreProduct = Product & { vendorSlug: string; vendorName: string };
+export type StoreProduct = Product & {
+  vendorSlug: string;
+  vendorName: string;
+  perTeamLimit: number;
+  inventoryQuantity: number;
+  imageFilename: string;
+};
 export type StoreVendor = { slug: string; name: string };
 
-const fallbackProducts: StoreProduct[] = catalog.map((product) => {
-  const slug = fallbackAreaById.get(product.id) ?? "aisle";
-  const vendor = fallbackVendors.find((candidate) => candidate.slug === slug) ?? fallbackVendors[0];
-  return { ...product, vendorSlug: vendor.slug, vendorName: vendor.name };
+const fallbackProducts: StoreProduct[] = catalog.flatMap((product) => {
+  const vendor = product.id === "flour" || product.id === "boxes"
+    ? { slug: "aisle", name: "Aisle" }
+    : product.id === "vanilla" || product.id === "chocolate"
+      ? { slug: "fruits", name: "Fruits" }
+      : { slug: "fridge", name: "Fridge" };
+  return [{ ...product, vendorSlug: vendor.slug, vendorName: vendor.name, perTeamLimit: 4, inventoryQuantity: 24, imageFilename: `${product.id}.svg` }];
 });
 
 /**

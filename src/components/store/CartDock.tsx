@@ -1,11 +1,12 @@
 "use client";
 
+import { productsById } from "@/lib/catalog";
 import { useStoreCart } from "./StoreCart";
 import { GrainImage } from "./GrainImage";
 
 /** Bottom tray: one stack per product, labelled on hover. */
 export function CartDock() {
-  const { lines, remove, productsById } = useStoreCart();
+  const { lines, remove } = useStoreCart();
   if (lines.length === 0) return null;
 
   return (
@@ -31,7 +32,7 @@ export function CartDock() {
                 {Array.from({ length: line.quantity }).map((_, i) => (
                   <GrainImage
                     key={i}
-                    src={`/store/products/${product.imageFilename ?? `${product.id}.svg`}`}
+                    src={`/store/products/${product.id}.svg`}
                     style={{ left: i * 35 }}
                   />
                 ))}

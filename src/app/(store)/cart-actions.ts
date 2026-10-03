@@ -7,12 +7,7 @@ import { applyCartChange, CART_COOKIE, LAST_ORDER_COOKIE, serializeCart } from "
 import { readCart } from "@/lib/store/cart-server";
 import { getCurrentUser } from "@/lib/auth";
 import { createMixedStoreCheckout } from "@/lib/orders";
-import { shopAccess } from "@/lib/teams";
-import { getActiveStoreProducts, type StoreProduct } from "@/lib/store/catalog-server";
-
-/** Per-product cap: the team limit, or the remaining stock if that is lower. */
-const limitsFor = (products: StoreProduct[]) =>
-  new Map(products.map((product) => [product.id, Math.min(product.perTeamLimit, product.inventoryQuantity)]));
+import { getActiveStoreProducts } from "@/lib/store/catalog-server";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -39,14 +34,12 @@ export async function addToCart(productId: string, quantity = 1) {
   const lines = await readCart(productIds);
   const existingQuantity = lines.find((line) => line.productId === productId)?.quantity ?? 0;
   const allowed = Math.min(product.perTeamLimit, product.inventoryQuantity);
-  await write(applyCartChange(lines, { type: "add", productId, quantity: Math.max(0, Math.min(quantity, allowed - existingQuantity)) }, productIds, limitsFor(products)));
+  await write(applyCartChange(lines, { type: "add", productId, quantity: Math.max(0, Math.min(quantity, allowed - existingQuantity)) }, productIds));
 }
 
 /** Sets the exact quantity (0 removes). The reducer clamps it to the per-team limit. */
 export async function setCartQuantity(productId: string, quantity: number) {
-  const products = await getActiveStoreProducts();
-  const productIds = new Set(products.map((product) => product.id));
-  await write(applyCartChange(await readCart(productIds), { type: "set", productId, quantity }, productIds, limitsFor(products)));
+  await write(applyCartChange(await readCart(), { type: "set", productId, quantity }));
 }
 
 export async function removeFromCart(productId: string, quantity = 1) {
@@ -70,9 +63,6 @@ export async function completeOrder() {
 
   const user = await getCurrentUser();
   if (!user) throw new Error("Log in before placing an order.");
-  if (!(await shopAccess(user.teamId)).allowed) {
-    throw new Error("The shop opens after the project deadline for teams with at least three members.");
-  }
 
   await createMixedStoreCheckout(user.teamId, user.id, user.eventId, lines);
 

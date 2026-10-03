@@ -16,7 +16,7 @@ export default async function RampHomePage() {
   const data = sampleHomeData;
 
   return (
-    <RampAppShell nav={data.nav} topBar={false}>
+    <RampAppShell nav={data.nav} viewer={data.viewer} topBar={false}>
       <div className="rampHomeGrid">
         <RampHomeFeed data={data} hasTeam={Boolean(member)} />
       </div>
