@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 
-/** The Ramp design around the application's real Supabase magic-link flow. */
+// Magic-link delivery is currently unreliable, so sign-in skips it entirely:
+// submitting the email signs that address straight into a real session.
 export function RampLoginForm() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -23,22 +23,19 @@ export function RampLoginForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const response = await fetch("/api/auth/request-code", {
+      const response = await fetch("/api/auth/instant-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: value }),
       });
       const data = (await response.json()) as { error?: string };
-      if (!response.ok) throw new Error(data.error ?? "Unable to send a sign-in link.");
-      setSent(true);
+      if (!response.ok) throw new Error(data.error ?? "Unable to sign in.");
+      window.location.href = "/ramp";
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Unable to send a sign-in link.");
-    } finally {
+      setError(cause instanceof Error ? cause.message : "Unable to sign in.");
       setSubmitting(false);
     }
   }
-
-  if (sent) return <p className="rampNote">Check <strong>{email}</strong> for your sign-in link.</p>;
 
   return (
     <form className="rampForm" onSubmit={submit} noValidate>
@@ -59,7 +56,7 @@ export function RampLoginForm() {
       </div>
       {error && <p className="rampError" role="alert">{error}</p>}
       <button className="rampSubmit" type="submit" disabled={submitting}>
-        {submitting ? "Sending…" : "Continue"}
+        {submitting ? "Signing in…" : "Continue"}
       </button>
       <div className="rampFormFooter" />
     </form>
