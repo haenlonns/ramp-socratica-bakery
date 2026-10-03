@@ -13,3 +13,4 @@ supabase/.temp/
 /dist/
 .vinext/
 .cloudflare/
+.mcp.json

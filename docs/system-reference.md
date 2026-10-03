@@ -10,7 +10,7 @@ The system is local to the event application. It has no payment-network connecti
 
 - Supabase Auth provides email magic-link sessions.
 - The application derives active team membership from the authenticated session.
-- An Admin creates teams and emails team-bound, one-time invitation links. The link signs in its recipient and adds that recipient email to the selected team. Participants cannot create, browse, choose, leave, or switch teams themselves.
+- The public `/submission` delivery slip creates a FORMING team from up to six participant names and emails and sends each listed person a team-bound, one-time confirmation link. The link signs in its recipient and adds that recipient email to that selected team. Accepted submissions are then forwarded to the event Google Form. Admins can resend or add invitations to submitted teams.
 - A participant has one active team per event. Teams are limited to six active participants and need three to be eligible to shop.
 - Admin and Superadmin permissions are stored in `event_admins`.
 
@@ -30,7 +30,9 @@ Supplier checkout calls `post_mixed_store_checkout`. The function locks the shar
 ## Routes
 
 - `/` — account landing page while storefronts are being redesigned.
-- `/teams/:id` — team membership and submission workspace.
+- `/submission` — public project delivery slip and team-formation intake.
+- `/submissions/:id` — public project delivery slip.
+- `/teams/:id` — authenticated shortcut to that team’s public delivery slip.
 - `/admin` — event Admin console.
 - `/api/orders` — supplier checkout.
 - `/api/mock-ramp/*` — authenticated read API for the mock-finance UI. See [mock-finance-api.md](./mock-finance-api.md).
@@ -38,8 +40,8 @@ Supplier checkout calls `post_mixed_store_checkout`. The function locks the shar
 ## Current limits
 
 - The finance API returns bounded newest-first transaction lists; cursor pagination is not implemented.
-- Admins can edit all active-team fund limits together. Card lifecycle and simulated refund/reversal controls are not implemented.
+- Fund-limit controls are not exposed in the Admin console. Card lifecycle and simulated refund/reversal controls are not implemented.
 - The simulator schema has been deployed, but an end-to-end funded-team rehearsal has not yet been recorded.
-- The Admin console sends individual team invitations. CSV import with validation and preview is a planned event-setup improvement.
+- Public intake has no abuse control (such as Turnstile); each submission can send up to six magic-link emails.
 - Supabase Auth must allow the deployed callback URL with an `invite` query parameter (for example, `https://app.example.com/auth/callback*`) before invitations can be sent from that origin.
 - Obsolete integration tables remain in the remote database as temporary rollback protection; the application no longer uses them.
