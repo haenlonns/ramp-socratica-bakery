@@ -3,6 +3,7 @@ import { RampAppShell } from "@/components/ramp/RampAppShell";
 import type { AdminRecord, AdminTeam } from "@/components/AdminConsole";
 import type { FacilitatorOrder } from "@/components/FacilitatorOrders";
 import { EVENT_ID, getCurrentAdmin } from "@/lib/auth";
+import { viewerForUser } from "@/lib/ramp/live-home";
 import { sampleHomeData } from "@/lib/ramp/sample-home";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { redirect } from "next/navigation";
@@ -58,7 +59,7 @@ export default async function AdminPage() {
   }));
 
   return (
-    <RampAppShell nav={sampleHomeData.nav} viewer={sampleHomeData.viewer}>
+    <RampAppShell nav={sampleHomeData.nav} viewer={viewerForUser(actor)}>
       <AdminTabs
         teams={teams}
         admins={admins}

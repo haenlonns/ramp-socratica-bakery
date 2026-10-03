@@ -59,20 +59,6 @@ export const sampleHomeData: HomeData = {
 
   transactions: [],
 
-  incompleteExpenses: [
-    {
-      id: "michaels-0929",
-      amountCents: 1168,
-      currency: "CAD",
-      merchantName: "Michaels",
-      merchantLogoSrc: "/ramp/icons/merchant-michaels.png",
-      occurredAtLabel: "Sep 29 at 8:53 p.m.",
-      spentFrom: "Ramp x Socratica - Making Dough",
-      spentFromOptions: ["Ramp x Socratica - Making Dough", "F26 Sessions", "General Card"],
-      memoRequired: true,
-      memo: "Craft supplies for community co-working session",
-    },
-  ],
 
   wallet: {
     title: "Virtual cards",

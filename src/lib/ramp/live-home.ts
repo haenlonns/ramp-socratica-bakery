@@ -40,7 +40,6 @@ export function liveHomeData(user: CurrentUser, overview: MockFinanceOverview): 
         invoiceHref: transaction.orderId ? `/invoices/${transaction.orderId}` : undefined,
         invoiceNumber: transaction.orderId ? "View invoice" : undefined,
       })),
-    incompleteExpenses: [],
     wallet: {
       title: "Workshop card",
       cards: [{

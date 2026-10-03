@@ -126,33 +126,12 @@ export type CardDetail = {
   revealable?: boolean;
 };
 
-/** One transaction still missing a receipt, memo, or other required detail. */
-export type IncompleteExpense = {
-  id: string;
-  amountCents: number;
-  currency: string;
-  merchantName: string;
-  /** Merchant logo; falls back to a monogram when absent. */
-  merchantLogoSrc?: string;
-  /** Pre-formatted for now, e.g. "Sep 29 at 8:53 p.m.". */
-  occurredAtLabel: string;
-  /** Card the spend was drawn from — the "Spent from" field. */
-  spentFrom: string;
-  spentFromOptions?: string[];
-  receiptRequired?: boolean;
-  memoRequired?: boolean;
-  /** Prefilled memo; the design shows a suggested one in blue. */
-  memo?: string;
-};
-
 export type HomeData = {
   viewer: Viewer;
   nav: NavItem[];
   notices: Notice[];
   checklist: { title: string; tasks: ChecklistTask[] };
   transactions: RampTransaction[];
-  /** Section renders only when this is non-empty. */
-  incompleteExpenses: IncompleteExpense[];
   /** Omit viewAllHref to render an inert "View all" that does not navigate. */
   wallet: { title: string; viewAllHref?: string; cards: WalletCard[] };
 };
@@ -168,52 +147,6 @@ export type RampTransaction = {
   invoiceNumber?: string;
 };
 
-/** One labelled row in the expense Details grid. */
-export type ExpenseField = {
-  id: string;
-  icon: IconName;
-  label: string;
-  /** Rendered as a select when options are supplied. */
-  value?: string;
-  options?: string[];
-  /** "Upload a receipt (required)" renders in the warning colour. */
-  missing?: boolean;
-  /** Memo renders in blue. */
-  tone?: "default" | "suggestion";
-  /** Renders an inline text input rather than static text. */
-  editable?: boolean;
-};
-
-export type TimelineEvent = {
-  id: string;
-  /** Avatar image; falls back to a neutral dot. */
-  avatarSrc?: string;
-  text: string;
-};
-
-export type ExpenseSection = {
-  id: string;
-  title: string;
-  badge?: { label: string; tone: "neutral" | "positive" };
-  /** Collapsed sections render the title row only. */
-  collapsed?: boolean;
-  action?: string;
-};
-
-/** Full detail view for one incomplete expense. */
-export type ExpenseDetail = {
-  id: string;
-  amountLabel: string;
-  merchantName: string;
-  merchantLogoSrc?: string;
-  cardholder: string;
-  occurredAtLabel: string;
-  notice?: { title: string; body: string; actionLabel: string };
-  fields: ExpenseField[];
-  requirementsNote?: { prefix: string; source: string };
-  sections: ExpenseSection[];
-  activity: TimelineEvent[];
-};
 
 /** A posted card transaction on the Ramp home page, newest first. */
 export type HomeTransaction = {
