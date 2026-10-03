@@ -9,7 +9,7 @@ const transactionDate = new Intl.DateTimeFormat("en-CA", {
   minute: "2-digit",
 });
 
-function viewerForUser(user: CurrentUser): Viewer {
+export function viewerForUser(user: { email: string }): Viewer {
   const localPart = user.email.split("@")[0] || "Participant";
   const name = localPart.split(/[._+-]+/).filter(Boolean).map((part) => part[0]?.toUpperCase() + part.slice(1)).join(" ") || "Participant";
   const initials = name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();

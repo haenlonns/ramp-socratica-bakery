@@ -5,9 +5,30 @@ export const EVENT_ID = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 export type AuthenticatedUser = { id: string; email: string };
 export type CurrentUser = AuthenticatedUser & { teamId: string; teamName: string; memberRole: "OWNER" | "MEMBER"; eventId: string };
 
+// Local development only: DEV_LOGIN_EMAIL signs you in as that address without a magic link.
+// Requires NODE_ENV=development (`next dev`), so a production build ignores it.
+let devIdentity: AuthenticatedUser | undefined;
+async function getDevLoginUser(): Promise<AuthenticatedUser | null> {
+  const email = process.env.NODE_ENV === "development" ? process.env.DEV_LOGIN_EMAIL?.trim().toLowerCase() : undefined;
+  if (!email) return null;
+  if (devIdentity?.email === email) return devIdentity;
+  const admin = createAdminClient();
+  const { data: profile } = await admin.from("profiles").select("id").eq("email", email).maybeSingle();
+  let id = profile?.id as string | undefined;
+  if (!id) {
+    const { data, error } = await admin.auth.admin.createUser({ email, email_confirm: true });
+    if (error || !data.user) throw new Error(`DEV_LOGIN_EMAIL: could not create ${email}: ${error?.message}`);
+    id = data.user.id;
+  }
+  return (devIdentity = { id, email });
+}
+
 export async function getAuthenticatedUser(): Promise<AuthenticatedUser | null> {
-  const supabase = await createServerSupabaseClient(); const { data } = await supabase.auth.getClaims(); const claims = data?.claims;
-  if (!claims?.sub || typeof claims.email !== "string") return null;
+  const supabase = await createServerSupabaseClient(); const { data } = await supabase.auth.getClaims();
+  const session = data?.claims?.sub && typeof data.claims.email === "string" ? { sub: data.claims.sub, email: data.claims.email } : null;
+  const dev = session ? null : await getDevLoginUser();
+  const claims = session ?? (dev ? { sub: dev.id, email: dev.email } : null);
+  if (!claims) return null;
   const admin = createAdminClient();
   await admin.from("profiles").upsert({ id: claims.sub, email: claims.email }, { onConflict: "id", ignoreDuplicates: true });
   const { data: bootstrap } = await admin.from("superadmin_bootstraps").select("event_id,consumed_at").eq("email", claims.email.toLowerCase()).maybeSingle();

@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { NavItem } from "@/lib/ramp/types";
-import { activeTeam } from "@/lib/ramp/config";
+import type { NavItem, Viewer } from "@/lib/ramp/types";
 import { markSheetOpened } from "@/lib/use-sheet-param";
 import { RampIcon } from "./RampIcon";
-import { useRampConfig } from "./RampConfigProvider";
 
 function NavRowContent({ item }: { item: NavItem }) {
   return (
@@ -18,10 +16,8 @@ function NavRowContent({ item }: { item: NavItem }) {
   );
 }
 
-export function RampSidebar({ items }: { items: NavItem[] }) {
+export function RampSidebar({ items, viewer, teamName }: { items: NavItem[]; viewer: Viewer; teamName?: string }) {
   const pathname = usePathname();
-  const { config } = useRampConfig();
-  const team = activeTeam(config);
 
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -41,8 +37,8 @@ export function RampSidebar({ items }: { items: NavItem[] }) {
 
       <div className="rampSidebarScroll">
         <div className="rampSidebarUser">
-          <p>{team.viewer.firstName}</p>
-          <p className="rampSidebarUserSub">{team.name}</p>
+          <p>{viewer.firstName}</p>
+          {teamName && <p className="rampSidebarUserSub">{teamName}</p>}
         </div>
         <hr className="rampSidebarRule" />
 

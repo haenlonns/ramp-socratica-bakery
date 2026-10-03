@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 import { productsById } from "@/lib/catalog";
-import { activeTeam } from "@/lib/ramp/config";
+import { isProductImageAsset } from "@/lib/store/product-assets";
 import { usePurchases, type Purchase } from "@/lib/store/purchases";
 import { EmptyPurchases } from "./EmptyPurchases";
 import { Sheet } from "@/components/ui/Sheet";
 import { markSheetOpened } from "@/lib/use-sheet-param";
-import { useRampConfig } from "./RampConfigProvider";
 
 const POLICY = [
   "Every team spends from one shared fund, charged to the team's virtual card.",
@@ -38,6 +37,12 @@ function describe(purchase: Purchase) {
   return names.length > 1 ? `${names[0]} +${names.length - 1} more` : names[0];
 }
 
+/** Art for the first item bought, so the avatar matches the purchase. */
+function artFor(purchase: Purchase) {
+  const file = `${purchase.lines[0]?.productId}.svg`;
+  return isProductImageAsset(file) ? `/store/products/${file}` : "/store/products/blueberry.svg";
+}
+
 function Row({ purchase, who, program }: { purchase: Purchase; who: string; program: string }) {
   return (
     <li className="rampTxRow">
@@ -50,17 +55,15 @@ function Row({ purchase, who, program }: { purchase: Purchase; who: string; prog
         <p className="rampTxSub rampTxSub--strong">{program}</p>
       </div>
       <span className="rampTxAvatar">
-        <img className="rampTxAvatarArt" src="/store/products/blueberry.svg" alt="" aria-hidden />
+        <img className="rampTxAvatarArt" src={artFor(purchase)} alt="" aria-hidden />
         <span className="rampTxBadge"><img src="/ramp/icons/shield-check.svg" alt="" aria-hidden /></span>
       </span>
     </li>
   );
 }
 
-export function TransactionsSection() {
+export function TransactionsSection({ who, program }: { who: string; program: string }) {
   const purchases = usePurchases();
-  const { config } = useRampConfig();
-  const team = activeTeam(config);
   const [policyOpen, setPolicyOpen] = useState(false);
 
   return (
@@ -84,7 +87,7 @@ export function TransactionsSection() {
       ) : (
         <ul className="rampTxList">
           {purchases.map((purchase) => (
-            <Row key={purchase.id} purchase={purchase} who={team.viewer.firstName} program={team.name} />
+            <Row key={purchase.id} purchase={purchase} who={who} program={program} />
           ))}
         </ul>
       )}

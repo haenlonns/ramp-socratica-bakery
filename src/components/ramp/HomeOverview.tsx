@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { walletCardsFor } from "@/lib/ramp/from-config";
-import { spentCents, usePurchases } from "@/lib/store/purchases";
+import type { WalletCard } from "@/lib/ramp/types";
+import { usePurchases } from "@/lib/store/purchases";
 import { CardDrawer } from "./CardDrawer";
-import { useRampConfig } from "./RampConfigProvider";
 
 const whole = (cents: number) => {
   const amount = cents / 100;
@@ -37,15 +36,14 @@ function SpendChart({ totals }: { totals: number[] }) {
   );
 }
 
-export function HomeOverview({ hasTeam = true }: { hasTeam?: boolean }) {
-  const { config } = useRampConfig();
+export function HomeOverview({ card }: { card?: WalletCard }) {
   const purchases = usePurchases();
   const [drawer, setDrawer] = useState(false);
 
-  const card = hasTeam ? walletCardsFor(config)[0] : undefined;
-  const spent = spentCents(purchases);
+  // The card carries the live fund: remaining already reflects every posted purchase.
   const limit = card?.limitCents ?? card?.remainingCents ?? 0;
-  const balance = (card?.remainingCents ?? 0) - spent;
+  const balance = card?.remainingCents ?? 0;
+  const spent = Math.max(0, limit - balance);
   // Blue is what has been spent; before the first purchase the track is empty.
   const spentShare = limit > 0 ? Math.min(1, Math.max(0, spent / limit)) : 0;
 
