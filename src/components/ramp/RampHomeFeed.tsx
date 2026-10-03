@@ -10,7 +10,7 @@ import { DevStateToggle } from "./DevStateToggle";
 import { HomeOverview } from "./HomeOverview";
 import { TransactionsSection } from "./TransactionsSection";
 
-export function RampHomeFeed({ data }: { data: HomeData }) {
+export function RampHomeFeed({ data, hasTeam = true }: { data: HomeData; hasTeam?: boolean }) {
   void data;
   const { config } = useRampConfig();
   const viewer = viewerFor(config);
@@ -34,7 +34,7 @@ export function RampHomeFeed({ data }: { data: HomeData }) {
       </h1>
 
       <TransactionsSection />
-      <HomeOverview />
+      <HomeOverview hasTeam={hasTeam} />
       <AboutSheet />
     </div>
   );

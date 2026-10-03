@@ -37,12 +37,12 @@ function SpendChart({ totals }: { totals: number[] }) {
   );
 }
 
-export function HomeOverview() {
+export function HomeOverview({ hasTeam = true }: { hasTeam?: boolean }) {
   const { config } = useRampConfig();
   const purchases = usePurchases();
   const [drawer, setDrawer] = useState(false);
 
-  const card = walletCardsFor(config)[0];
+  const card = hasTeam ? walletCardsFor(config)[0] : undefined;
   const spent = spentCents(purchases);
   const limit = card?.limitCents ?? card?.remainingCents ?? 0;
   const balance = (card?.remainingCents ?? 0) - spent;
@@ -66,8 +66,8 @@ export function HomeOverview() {
             View all <span aria-hidden>&rarr;</span>
           </button>
         </div>
-        <button type="button" className="rampStat rampStat--card" onClick={() => setDrawer(true)}>
-          <span className="rampStatLabel">Current card balance</span>
+        <button type="button" className="rampStat rampStat--card" onClick={() => card && setDrawer(true)} disabled={!card}>
+          <span className="rampStatLabel">{card ? "Current card balance" : "No card yet. Your admin will add you to a team."}</span>
           <span className="rampStatValue">{whole(balance)}</span>
           <span className="rampBal" aria-hidden>
             <span className="rampBalFill" style={{ width: `${spentShare * 100}%` }} />
