@@ -58,6 +58,8 @@ export const sampleHomeData: HomeData = {
     ],
   },
 
+  transactions: [],
+
   incompleteExpenses: [
     {
       id: "michaels-0929",

@@ -2,6 +2,13 @@ import type { CurrentUser } from "@/lib/auth";
 import type { MockFinanceOverview } from "@/lib/mock-finance";
 import type { HomeData, Viewer } from "./types";
 
+const transactionDate = new Intl.DateTimeFormat("en-CA", {
+  month: "short",
+  day: "numeric",
+  hour: "numeric",
+  minute: "2-digit",
+});
+
 function viewerForUser(user: CurrentUser): Viewer {
   const localPart = user.email.split("@")[0] || "Participant";
   const name = localPart.split(/[._+-]+/).filter(Boolean).map((part) => part[0]?.toUpperCase() + part.slice(1)).join(" ") || "Participant";
@@ -22,6 +29,17 @@ export function liveHomeData(user: CurrentUser, overview: MockFinanceOverview): 
     ],
     notices: [],
     checklist: { title: "Before you spend", tasks: [] },
+    transactions: overview.transactions
+      .filter((transaction) => transaction.status === "POSTED")
+      .map((transaction) => ({
+        id: transaction.id,
+        merchantName: transaction.merchantName,
+        amountCents: transaction.amountCents,
+        currency: transaction.currency,
+        occurredAtLabel: transactionDate.format(new Date(transaction.createdAt)),
+        invoiceHref: transaction.orderId ? `/invoices/${transaction.orderId}` : undefined,
+        invoiceNumber: transaction.orderId ? "View invoice" : undefined,
+      })),
     incompleteExpenses: [],
     wallet: {
       title: "Workshop card",
