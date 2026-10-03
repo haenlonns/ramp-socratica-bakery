@@ -1666,8 +1666,6 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
 .rampFacilitator h2, .rampFacilitator h3 { margin: 0; font-size: 20px; line-height: 28px; font-weight: 400; }
 .rampFacilitator h3 { font-size: 16px; line-height: 24px; }
 .rampFacilitator .eyebrow { margin: 0 0 4px; color: var(--ramp-grey-42); font-size: 12px; font-weight: 300; line-height: 16px; letter-spacing: 0; text-transform: none; }
-.rampFacilitator .adminControls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-.rampFacilitator .adminCard { display: grid; align-content: start; gap: 12px; }
 .rampFacilitator form { display: grid; gap: 12px; }
 .rampFacilitator label { display: grid; gap: 4px; color: var(--ramp-grey-42); font-size: 12px; line-height: 16px; }
 .rampFacilitator input, .rampFacilitator select { width: 100%; height: 40px; padding: 0 10px; border: 1px solid var(--ramp-line-strong); border-radius: 0; background: var(--ramp-white); color: var(--ramp-grey-10); font: inherit; font-size: 14px; }
@@ -1707,7 +1705,7 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   .rampProductAssetGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .rampAdminListRow { align-items: flex-start; flex-wrap: wrap; }
   .rampAdminListRow > .rampAdminActions { width: 100%; margin-left: 0; }
-  .rampFacilitator .adminControls, .rampFacilitator .accessGrid { grid-template-columns: 1fr; }
+  .rampFacilitator .accessGrid { grid-template-columns: 1fr; }
   .rampFacilitator .fundLimitsFooter, .rampFacilitator .inviteForm, .rampFacilitator .tableHeader, .rampFacilitator .teamManagementHeader { align-items: stretch; flex-direction: column; }
 }
 

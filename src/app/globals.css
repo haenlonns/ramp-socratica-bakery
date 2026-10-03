@@ -90,8 +90,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 .linkButton { border: 0; background: transparent; color: var(--green); text-decoration: underline; cursor: pointer; }
 .adminConsole { display: grid; gap: 28px; margin-bottom: 42px; }
 .adminGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
-.adminCard { padding: 24px; }
-.adminCard h2, .teamAdminCard h3 { font-size: 25px; }
 .mutedCopy { color: var(--muted); line-height: 1.45; font-size: 14px; }
 .adminNotice { color: var(--green); background: #d9eee5; padding: 12px; border-radius: 8px; overflow-wrap: anywhere; }
 .adminList { display: grid; gap: 8px; margin-top: 18px; }
@@ -110,27 +108,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 .memberAdminRow small { display: block; color: var(--muted); margin-top: 3px; }
 .memberAdminRow label { font-size: 11px; }
 .memberAdminRow select { padding: 9px; }
-.teamPanel { padding: 28px; display: grid; gap: 18px; }
-.teamPanel > form:first-of-type { grid-template-columns: minmax(0, 1fr) auto; align-items: end; max-width: 560px; }
-.teamPanel ul { margin: -8px 0 0; padding-left: 20px; color: var(--muted); line-height: 1.7; }
-.submissionEditor, .submissionMedia { border-top: 1px solid var(--line); padding-top: 28px; margin-top: 10px; }
-.submissionEditorHeading { display: flex; gap: 18px; align-items: start; justify-content: space-between; }
-.submissionLinkEditor { display: grid; grid-template-columns: 120px 1fr 1.6fr auto; gap: 8px; align-items: center; margin: 10px 0; }
-.submissionLinkEditor input, .submissionLinkEditor select { padding: 10px; }
-.submissionMedia { display: grid; gap: 18px; }
-.imageUpload { display: grid; grid-template-columns: 1.2fr 1fr 1fr auto; align-items: end; gap: 10px; }
-.submissionGallery, .publicGallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.submissionGallery figure, .publicGallery figure { margin: 0; display: grid; gap: 8px; }
-.submissionGallery img, .publicGallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 1px solid var(--line); background: var(--cream); }
-.submissionGallery figcaption, .publicGallery figcaption { color: var(--muted); font-size: 13px; }
-.submissionPage { max-width: 1040px; }
-.submissionHero { padding: 40px 0; max-width: 760px; }
-.submissionHero h1 { margin-bottom: 16px; }
-.submissionBody { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 50px; margin-top: 48px; }
-.submissionStory { white-space: pre-wrap; line-height: 1.7; font-size: 17px; }
-.projectLinks { padding: 22px; height: fit-content; }
-.projectLinks a { display: grid; gap: 4px; padding: 12px 0; border-top: 1px solid var(--line); color: var(--green); font-weight: 800; text-decoration: none; }
-.projectLinks span { color: var(--orange); font-size: 10px; letter-spacing: .08em; }
 
 @media (max-width: 800px) {
   .siteHeader nav { display: none; }
@@ -147,7 +124,6 @@ input:focus, select:focus, textarea:focus { outline: 2px solid color-mix(in srgb
   .adminGrid { grid-template-columns: 1fr; }
   .teamAdminTools, .teamAdminTools form, .memberAdminRow { grid-template-columns: 1fr; }
   .adminTeamsHeader { align-items: start; flex-direction: column; }
-  .teamPanel > form:first-of-type, .submissionLinkEditor, .imageUpload, .submissionGallery, .publicGallery, .submissionBody { grid-template-columns: 1fr; }
 }
 
 @media print {
@@ -177,14 +153,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid color-mix(in srgb, va
 .dialogActions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
 @media (max-width: 800px) { .teamDirectory { padding: 20px; } .teamDirectoryHeader { align-items: stretch; flex-direction: column; } .teamDirectoryHeader .primary { width: 100%; } }
 
-.adminControls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .inviteForm { display: flex; align-items: end; gap: 12px; margin: 18px 0; }
 .inviteForm label { flex: 1; }
 .fundLimitsFooter { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-top: 18px; }
 .fundLimitsFooter label { flex: 1; }
 .negativeBalance { color: var(--danger); font-weight: 700; }
-.adminCard { display: grid; align-content: start; gap: 10px; }
-.adminCard form { max-width: 420px; }
 .adminTablePanel, .teamManagementPanel, .accessPanel { padding: 28px; }
 .adminTablePanel .tableHeader, .tablePanel .tableHeader { align-items: start; gap: 24px; margin-bottom: 20px; }
 .adminTable, .ordersTable, .membersTable, .accessTable { min-width: 680px; }
@@ -193,7 +166,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid color-mix(in srgb, va
 .adminTable tbody tr:hover, .ordersTable tbody tr:hover, .membersTable tbody tr:hover, .accessTable tbody tr:hover { background: color-mix(in srgb, var(--cream), transparent 68%); }
 .adminTable tbody tr.isSelected { background: color-mix(in srgb, var(--cream), transparent 38%); }
 .teamManagementPanel { display: grid; gap: 24px; }
-.teamManagementHeader { display: flex; align-items: start; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }
+.teamManagementHeader { display: flex; align-items: start; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); padding-bottom: 20px; }.teamManagementActions { display: flex; align-items: center; gap: 16px; }
 .teamManagementHeader h2 { margin-bottom: 6px; }
 .managementGrid, .accessGrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, .8fr); gap: 28px; }
 .balanceForm { grid-template-columns: 1fr 1.4fr auto; align-items: end; gap: 10px; }
@@ -207,7 +180,22 @@ button:focus-visible, a:focus-visible { outline: 3px solid color-mix(in srgb, va
 .accessGrid form { align-content: start; }
 .tableError { display: block; color: #a22e1b; line-height: 1.4; margin-top: 6px; max-width: 260px; }
 .quantity output { min-width: 20px; text-align: center; font-weight: 800; }
-@media (max-width: 800px) { .adminControls, .managementGrid, .accessGrid, .balanceForm { grid-template-columns: 1fr; } .inviteForm, .fundLimitsFooter { align-items: stretch; flex-direction: column; } .teamManagementHeader { align-items: start; flex-direction: column; } .teamDangerZone { border-left: 0; border-top: 1px solid var(--line); padding: 22px 0 0; } }
+@media (max-width: 800px) { .managementGrid, .accessGrid, .balanceForm { grid-template-columns: 1fr; } .inviteForm, .fundLimitsFooter { align-items: stretch; flex-direction: column; } .teamManagementHeader { align-items: start; flex-direction: column; } .teamDangerZone { border-left: 0; border-top: 1px solid var(--line); padding: 22px 0 0; } }
 
 .secondary:disabled, .dangerButton:disabled, .linkButton:disabled { opacity: .5; cursor: not-allowed; }
 .linkButton:disabled { text-decoration: none; }
+
+/* Public project delivery slip */
+@font-face { font-family: "5by7"; src: url("/store/fonts/5by7-regular.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "5by7"; src: url("/store/fonts/5by7-bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Untitled Sans"; src: url("/store/fonts/UntitledSans-Regular.otf") format("opentype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Untitled Sans"; src: url("/store/fonts/UntitledSans-Medium.otf") format("opentype"); font-weight: 500; font-display: swap; }
+.deliverySlipPage { min-height: 100vh; padding: 72px 24px 120px; background: #f5f1e2; color: #131313; font-family: "Untitled Sans", "Helvetica Neue", Arial, sans-serif; }
+.deliverySlip { width: 820px; max-width: 100%; margin: 0 auto; padding: 54px 62px 44px; background: #fff; box-shadow: 8px 10px 0 #dbd3bf; }
+.deliverySlipHeader { position: relative; padding-bottom: 38px; border-bottom: 2px solid #131313; }.deliverySlipHeader p { margin: 0 0 18px; color: #2a2928; font: 700 10px/.7 "5by7", monospace; letter-spacing: 1px; text-transform: uppercase; opacity: .6; }.deliverySlipHeader h1 { margin: 0; font: 700 30px/1.4 "5by7", monospace; letter-spacing: -.48px; }.deliverySlipHeader span { position: absolute; right: 0; bottom: 42px; font: 700 10px/.7 "5by7", monospace; letter-spacing: 1px; color: #2a2928; opacity: .6; }
+.deliverySlipIntro { max-width: 525px; margin: 28px 0 44px; font: 400 16px/1.4 "Untitled Sans", sans-serif; }.deliverySlipMessage { margin: -18px 0 28px; padding: 13px 16px; color: #1f5c3a; background: #edf7f0; font: 400 14px/1.4 "Untitled Sans", sans-serif; }.deliverySlipMessage--error { color: #9f311e; background: #fff0ec; }
+.deliverySlipSection { display: grid; grid-template-columns: 170px 1fr; gap: 28px; padding: 30px 0; border-top: 1px solid #dedbd4; }.deliverySlipSection > div b { display: block; color: #2c64b7; font: 700 12px/1.4 "5by7", monospace; }.deliverySlipSection h2 { margin: 10px 0 7px; font: 700 24px/1 "5by7", monospace; letter-spacing: -.04em; }.deliverySlipSection > div p { margin: 0; color: #77746f; font: 400 13px/1.4 "Untitled Sans", sans-serif; }.deliverySlipSection fieldset { display: grid; gap: 16px; margin: 0; padding: 0; border: 0; }.deliverySlipSection label { display: grid; gap: 8px; font: 500 14px/1.4 "Untitled Sans", sans-serif; }.deliverySlipSection label em { color: #77746f; font-weight: 400; font-style: normal; }.deliverySlipSection input, .deliverySlipSection textarea { width: 100%; box-sizing: border-box; border: 1px solid #dedbd4; border-radius: 0; background: #fff; padding: 11px 12px; color: #131313; font: 400 16px/1.4 "Untitled Sans", sans-serif; }.deliverySlipSection input:focus, .deliverySlipSection textarea:focus { outline: 2px solid color-mix(in srgb, #2c64b7, transparent 72%); border-color: #2c64b7; }.deliverySlipSection textarea { min-height: 112px; resize: vertical; }.deliverySlipSection small { color: #77746f; font: 400 12px/1.4 "Untitled Sans", sans-serif; }.deliverySlipHoney { position: absolute; left: -9999px; opacity: 0; }
+.deliverySlipParticipants { display: grid; gap: 10px; }.deliverySlipParticipants > span { color: #131313; font: 500 14px/1.4 "Untitled Sans", sans-serif; }.deliverySlipParticipantRow { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 10px; }.deliverySlipAddButton { width: fit-content; border: 0; padding: 5px 0; background: transparent; color: #2c64b7; font: 700 12px/1.4 "5by7", monospace; cursor: pointer; }
+.deliverySlipFooter { display: flex; justify-content: flex-end; padding-top: 30px; border-top: 2px solid #131313; }.deliverySlipFooter button { border: 0; border-radius: 0; padding: 16px 18px; background: #2c64b7; color: #fff; font: 700 12px/1.4 "5by7", monospace; letter-spacing: .03em; cursor: pointer; }.deliverySlipFooter button:disabled { cursor: wait; opacity: .65; }
+.deliverySlip--project .deliverySlipSection label { gap: 6px; }.deliverySlip--project .deliverySlipSection label > p { margin: 0; color: #41403f; font: 400 16px/1.55 "Untitled Sans", sans-serif; white-space: pre-wrap; }.deliverySlip--project .deliverySlipSection label > a { overflow-wrap: anywhere; color: #2c64b7; font: 400 16px/1.4 "Untitled Sans", sans-serif; }
+@media (max-width: 640px) { .deliverySlipPage { padding: 28px 16px 64px; }.deliverySlip { padding: 34px 24px 30px; box-shadow: 4px 5px 0 #dbd3bf; }.deliverySlipHeader span { position: static; display: block; margin-top: 24px; }.deliverySlipSection, .deliverySlipParticipantRow { grid-template-columns: 1fr; gap: 20px; }.deliverySlipFooter { align-items: start; flex-direction: column; }.deliverySlipFooter button { width: 100%; } }

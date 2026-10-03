@@ -50,15 +50,6 @@ export function AdminConsole({ teams, admins, deadline, actorRole, className }: 
     void action({ action: "set_fund_limits", fundLimits, reason: String(data.get("fund-limit-reason") ?? "") });
   }
 
-  function submitCreateTeam(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const name = String(data.get("team-name") ?? "").trim();
-    if (!name) return setError("Enter a team name.");
-    void action({ action: "create_team", teamName: name, inviteEmails: String(data.get("team-member-emails") ?? "") });
-    event.currentTarget.reset();
-  }
-
   function submitInvitation(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedTeam) return;
@@ -72,28 +63,6 @@ export function AdminConsole({ teams, admins, deadline, actorRole, className }: 
 
   return <section className={`adminConsole ${className ?? ""}`}>
     {(notice || error) && <p className={error ? "error" : "adminNotice"} role="status">{error || notice}</p>}
-
-    <div className="adminControls">
-      <section className="panel adminCard">
-        <p className="eyebrow">Event settings</p><h2>Submission deadline</h2>
-        <form onSubmit={(event) => { event.preventDefault(); const value = String(new FormData(event.currentTarget).get("deadline")); if (value) void action({ action: "set_deadline", deadline: new Date(value).toISOString() }); }}>
-          <label htmlFor="deadline">Deadline<input id="deadline" name="deadline" type="datetime-local" defaultValue={new Date(deadline).toISOString().slice(0, 16)} /></label>
-          <button className="primary" disabled={working}>Save deadline</button>
-        </form>
-      </section>
-      <section className="panel adminCard">
-        <p className="eyebrow">Workshop finance</p><h2>Shared funds</h2>
-      </section>
-      <section className="panel adminCard">
-        <p className="eyebrow">Team setup</p><h2>Create a team</h2>
-        <form onSubmit={submitCreateTeam}>
-          <label htmlFor="team-name">Team name<input id="team-name" name="team-name" required minLength={3} maxLength={80} placeholder="e.g. Team Croissant" /></label>
-          <label htmlFor="team-member-emails">Participant emails <span className="mutedCopy">(optional)</span><textarea id="team-member-emails" name="team-member-emails" rows={3} placeholder="ada@example.com, ben@example.com, cy@example.com" aria-describedby="team-member-email-help" /></label>
-          <p id="team-member-email-help" className="mutedCopy">Separate up to six email addresses with commas.</p>
-          <button className="primary" disabled={working}>Create team and send invitations</button>
-        </form>
-      </section>
-    </div>
 
     <section className="panel adminTablePanel" aria-labelledby="fund-limits-heading">
       <header className="tableHeader"><div><p className="eyebrow">Workshop finance</p><h2 id="fund-limits-heading">Fund limits</h2></div></header>
@@ -121,7 +90,7 @@ export function AdminConsole({ teams, admins, deadline, actorRole, className }: 
     </section>
 
     {selectedTeam && <section className="panel teamManagementPanel" aria-labelledby="manage-team-heading">
-      <header className="teamManagementHeader"><div><p className="eyebrow">Team management</p><h2 id="manage-team-heading">{selectedTeam.name}</h2><p className="mutedCopy">{selectedTeam.members.length}/6 members · {selectedTeam.orderCount} orders · {teamStatus(selectedTeam, deadline).replaceAll("_", " ")}</p></div><button className="linkButton" type="button" onClick={() => setSelectedTeamId(null)}>Close</button></header>
+      <header className="teamManagementHeader"><div><p className="eyebrow">Team management</p><h2 id="manage-team-heading">{selectedTeam.name}</h2><p className="mutedCopy">{selectedTeam.members.length}/6 members · {selectedTeam.orderCount} orders · {teamStatus(selectedTeam, deadline).replaceAll("_", " ")}</p></div><div className="teamManagementActions"><a className="textLink" href={`/teams/${selectedTeam.id}`}>View submission</a><button className="linkButton" type="button" onClick={() => setSelectedTeamId(null)}>Close</button></div></header>
       <section className="teamDangerZone"><h3>Team status</h3><button className="dangerButton" type="button" disabled={working || selectedTeam.status === "ARCHIVED"} onClick={() => setPendingAction({ title: `Archive ${selectedTeam.name}?`, description: "This marks the empty team as archived. Its participants must be removed first.", payload: { action: "archive_team", teamId: selectedTeam.id }, confirmLabel: "Archive team", destructive: true })}>Archive team</button></section>
       <section className="membersSection"><header><h3>Invite participants</h3></header><form className="inviteForm" onSubmit={submitInvitation}><label htmlFor="invite-email">Participant email<input id="invite-email" name="invite-email" type="email" required placeholder="person@example.com" /></label><button className="primary" disabled={working || selectedTeam.members.length + selectedTeam.pendingInvitations.length >= 6}>Send invitation</button></form>{selectedTeam.pendingInvitations.length > 0 && <div className="tableScroll"><table className="membersTable"><thead><tr><th scope="col">Invitation pending</th><th scope="col">Expires</th></tr></thead><tbody>{selectedTeam.pendingInvitations.map((invitation) => <tr key={invitation.id}><th scope="row">{invitation.email}</th><td>{new Intl.DateTimeFormat("en-CA", { dateStyle: "medium", timeStyle: "short" }).format(new Date(invitation.expires_at))}</td></tr>)}</tbody></table></div>}</section>
       <section className="membersSection"><header><h3>Members</h3></header><div className="tableScroll"><table className="membersTable"><thead><tr><th scope="col">Participant</th><th scope="col">Role</th><th scope="col">Move to</th><th scope="col"><span className="srOnly">Remove</span></th></tr></thead><tbody>{selectedTeam.members.length ? selectedTeam.members.map((member) => <tr key={member.id}><th scope="row">{member.email}</th><td>{member.role}</td><td><select aria-label={`Move ${member.email} to another team`} defaultValue="" disabled={working} onChange={(event) => { const destination = event.target.value; event.currentTarget.value = ""; if (destination) { const destinationTeam = teams.find((team) => team.id === destination); setPendingAction({ title: `Move ${member.email}?`, description: `This moves the participant from ${selectedTeam.name} to ${destinationTeam?.name ?? "the selected team"}.`, payload: { action: "reassign_member", membershipId: member.id, destinationTeamId: destination }, confirmLabel: "Move participant" }); } }}><option value="">Choose team</option>{teams.filter((candidate) => candidate.id !== selectedTeam.id && candidate.status !== "ARCHIVED" && candidate.members.length < 6).map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.name} ({candidate.members.length}/6)</option>)}</select></td><td className="teamTableAction"><button className="linkButton" type="button" disabled={working} onClick={() => setPendingAction({ title: `Remove ${member.email}?`, description: `This removes the participant from ${selectedTeam.name}. They will not belong to any bakery team afterward.`, payload: { action: "remove_member", membershipId: member.id }, confirmLabel: "Remove participant", destructive: true })}>Remove</button></td></tr>) : <tr><td className="tableMessage" colSpan={4}>No active participants.</td></tr>}</tbody></table></div></section>

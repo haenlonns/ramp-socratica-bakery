@@ -159,7 +159,7 @@ A declined purchase is recorded in the simulator. The checkout route returns `40
 
 This updates every supplied team's total spend limit in one transaction. A change records an `ADMIN_ADJUSTMENT` ledger entry. Lowering a limit below prior spending results in a negative remaining balance and blocks new purchases.
 
-Other existing Admin operations manage membership, teams, deadlines, and Admin roles. Card freeze/revoke/reissue and simulated refund/reversal controls are not yet exposed by this API.
+Other Admin operations manage membership, teams, and Admin roles. Card freeze/revoke/reissue and simulated refund/reversal controls are not yet exposed by this API.
 
 ## Design constraints
 
