@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { WalletCard } from "@/lib/ramp/types";
-import { remainingFraction } from "@/lib/ramp/format";
 import { CardFace } from "./CardFace";
 import { CopyButton } from "./CopyButton";
 import { EmptyPurchases } from "./EmptyPurchases";
@@ -68,7 +67,8 @@ export function CardDrawer({ card, onClose }: { card: WalletCard; onClose: () =>
 
   const limit = card.limitCents ?? card.remainingCents;
   const spent = Math.max(0, limit - card.remainingCents);
-  const remaining = remainingFraction(card.remainingCents, card.limitCents) ?? 1;
+  // Blue is what has been spent, growing from the left.
+  const spentShare = limit > 0 ? Math.min(1, Math.max(0, spent / limit)) : 0;
 
   return (
     <div className="rampDrawerBackdrop" onClick={onClose}>
@@ -130,8 +130,8 @@ export function CardDrawer({ card, onClose }: { card: WalletCard; onClose: () =>
                 </div>
 
                 <span className="rampSpendBar" role="progressbar" aria-valuemin={0} aria-valuemax={100}
-                  aria-valuenow={Math.round(remaining * 100)} aria-label={`${card.name} remaining`}>
-                  <span className="rampSpendBarFill" style={{ width: `${remaining * 100}%` }} />
+                  aria-valuenow={Math.round(spentShare * 100)} aria-label={`${card.name} spent`}>
+                  <span className="rampSpendBarFill" style={{ width: `${spentShare * 100}%` }} />
                 </span>
 
                 <div className="rampSpendFoot">
