@@ -1329,9 +1329,10 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  height: 68px;
+  /* 24px + 20px text lines, 12px padding, 1px borders. A fixed 68px with 16px padding overflowed. */
+  min-height: 70px;
   margin-bottom: -1px;
-  padding: 16px;
+  padding: 12px 16px;
   background: var(--ramp-white);
   border: 1px solid var(--ramp-line-strong);
 }
