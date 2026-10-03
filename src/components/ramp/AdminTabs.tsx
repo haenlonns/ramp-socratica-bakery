@@ -63,8 +63,8 @@ export function AdminTabs({
       <div className="rampAdminBody">
         {tab === "Products" ? <ProductAdmin /> : null}
         {tab === "Vendors" ? <VendorAdmin /> : null}
-        {tab === "Teams" ? <AdminConsole teams={teams} admins={admins} deadline={deadline} actorRole={actorRole} className="rampFacilitator" /> : null}
-        {tab === "Orders" ? <FacilitatorOrders initialOrders={orders} className="rampFacilitator" /> : null}
+        {tab === "Teams" ? <AdminConsole teams={teams} admins={admins} deadline={deadline} actorRole={actorRole} /> : null}
+        {tab === "Orders" ? <FacilitatorOrders initialOrders={orders} /> : null}
       </div>
     </div>
   );

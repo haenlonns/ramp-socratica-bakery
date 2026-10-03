@@ -12,7 +12,7 @@ export function VendorAdmin() {
   const [slug, setSlug] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [editing, setEditing] = useState<string | null>(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [saving, setSaving] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -30,7 +30,7 @@ export function VendorAdmin() {
 
   // Load from the catalogue API once and after a mutation.
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void refresh().catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load vendors.")); }, [refresh]);
+  useEffect(() => { void refresh().catch((error) => setMessage({ text: error instanceof Error ? error.message : "Unable to load vendors.", error: true })); }, [refresh]);
 
   function resetForm() {
     setAdding(false);
@@ -42,7 +42,7 @@ export function VendorAdmin() {
   async function create(event: React.FormEvent) {
     event.preventDefault();
     setSaving(true);
-    setMessage("");
+    setMessage(null);
     try {
       const response = await fetch("/api/admin/vendors", {
         method: "POST",
@@ -51,11 +51,11 @@ export function VendorAdmin() {
       });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error ?? "Unable to create vendor.");
-      setMessage(`${displayName} was added.`);
+      setMessage({ text: `${displayName} was added.` });
       resetForm();
       await refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to create vendor.");
+      setMessage({ text: error instanceof Error ? error.message : "Unable to create vendor.", error: true });
     } finally {
       setSaving(false);
     }
@@ -63,7 +63,7 @@ export function VendorAdmin() {
 
   async function save(vendor: Vendor, active = vendor.active) {
     setSaving(true);
-    setMessage("");
+    setMessage(null);
     try {
       const response = await fetch(`/api/admin/vendors/${vendor.slug}`, {
         method: "PATCH",
@@ -72,11 +72,11 @@ export function VendorAdmin() {
       });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error ?? "Unable to update vendor.");
-      setMessage(active ? `${vendor.displayName} was updated.` : `${vendor.displayName} was archived.`);
+      setMessage({ text: active ? `${vendor.displayName} was updated.` : `${vendor.displayName} was archived.` });
       setEditing(null);
       await refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update vendor.");
+      setMessage({ text: error instanceof Error ? error.message : "Unable to update vendor.", error: true });
     } finally {
       setSaving(false);
     }
@@ -106,7 +106,7 @@ export function VendorAdmin() {
         </form>
       )}
 
-      {message && <p className="rampAdminHint" role="status">{message}</p>}
+      {message && <p className={message.error ? "rampAdminMessage rampAdminMessage--error" : "rampAdminMessage"} role="status">{message.text}</p>}
       <div className="rampAdminList">
         {vendors.map((vendor) => {
           const activeProductCount = products.filter((product) => product.active && product.vendorSlug === vendor.slug).length;

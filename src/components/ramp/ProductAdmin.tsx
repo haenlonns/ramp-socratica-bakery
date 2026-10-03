@@ -20,7 +20,7 @@ export function ProductAdmin() {
   const [form, setForm] = useState<Form>(blank);
   const [editing, setEditing] = useState<Product | null>(null);
   const [adding, setAdding] = useState(false);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState<{ text: string; error?: boolean } | null>(null);
   const [saving, setSaving] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -35,7 +35,7 @@ export function ProductAdmin() {
 
   // The catalogue is loaded once, then refreshed after each mutation.
   // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => { void refresh().catch((error) => setMessage(error instanceof Error ? error.message : "Unable to load products.")); }, [refresh]);
+  useEffect(() => { void refresh().catch((error) => setMessage({ text: error instanceof Error ? error.message : "Unable to load products.", error: true })); }, [refresh]);
 
   const activeVendors = vendors.filter((vendor) => vendor.active);
   const activeProducts = products.filter((product) => product.active);
@@ -67,12 +67,12 @@ export function ProductAdmin() {
     const priceCents = Math.round(Number(form.price) * 100);
     const perTeamLimit = Number(form.perTeamLimit);
     const inventoryQuantity = Number(form.inventoryQuantity);
-    if (!Number.isInteger(priceCents) || priceCents < 1) return setMessage("Enter a price greater than zero.");
-    if (!Number.isInteger(perTeamLimit) || perTeamLimit < 1) return setMessage("Set a per-team limit of at least one.");
-    if (!Number.isInteger(inventoryQuantity) || inventoryQuantity < 0) return setMessage("Inventory must be zero or more.");
+    if (!Number.isInteger(priceCents) || priceCents < 1) return setMessage({ text: "Enter a price greater than zero.", error: true });
+    if (!Number.isInteger(perTeamLimit) || perTeamLimit < 1) return setMessage({ text: "Set a per-team limit of at least one.", error: true });
+    if (!Number.isInteger(inventoryQuantity) || inventoryQuantity < 0) return setMessage({ text: "Inventory must be zero or more.", error: true });
 
     setSaving(true);
-    setMessage("");
+    setMessage(null);
     try {
       const response = await fetch(editing ? `/api/admin/products/${editing.id}` : "/api/admin/products", {
         method: editing ? "PATCH" : "POST",
@@ -81,11 +81,11 @@ export function ProductAdmin() {
       });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error ?? "Unable to save product.");
-      setMessage(editing ? `${form.name} was updated.` : `${form.name} was added.`);
+      setMessage({ text: editing ? `${form.name} was updated.` : `${form.name} was added.` });
       close();
       await refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to save product.");
+      setMessage({ text: error instanceof Error ? error.message : "Unable to save product.", error: true });
     } finally {
       setSaving(false);
     }
@@ -94,15 +94,15 @@ export function ProductAdmin() {
   async function archive(product: Product) {
     if (!window.confirm(`Archive ${product.name}? It will stay in historical records.`)) return;
     setSaving(true);
-    setMessage("");
+    setMessage(null);
     try {
       const response = await fetch(`/api/admin/products/${product.id}`, { method: "DELETE" });
       const data = await response.json() as { error?: string };
       if (!response.ok) throw new Error(data.error ?? "Unable to archive product.");
-      setMessage(`${product.name} was archived.`);
+      setMessage({ text: `${product.name} was archived.` });
       await refresh();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to archive product.");
+      setMessage({ text: error instanceof Error ? error.message : "Unable to archive product.", error: true });
     } finally {
       setSaving(false);
     }
@@ -133,7 +133,7 @@ export function ProductAdmin() {
         </form>
       )}
 
-      {message && <p className="rampAdminHint" role="status">{message}</p>}
+      {message && <p className={message.error ? "rampAdminMessage rampAdminMessage--error" : "rampAdminMessage"} role="status">{message.text}</p>}
       <div className="rampAdminList">
         {activeProducts.map((product) => (
           <article key={product.id} className="rampAdminListRow">
