@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { WalletCard } from "@/lib/ramp/types";
-import { usePurchases } from "@/lib/store/purchases";
+import type { HomeTransaction, WalletCard } from "@/lib/ramp/types";
 import { CardDrawer } from "./CardDrawer";
 
 const whole = (cents: number) => {
@@ -36,8 +35,7 @@ function SpendChart({ totals }: { totals: number[] }) {
   );
 }
 
-export function HomeOverview({ card }: { card?: WalletCard }) {
-  const purchases = usePurchases();
+export function HomeOverview({ card, transactions }: { card?: WalletCard; transactions: HomeTransaction[] }) {
   const [drawer, setDrawer] = useState(false);
 
   // The card carries the live fund: remaining already reflects every posted purchase.
@@ -48,11 +46,11 @@ export function HomeOverview({ card }: { card?: WalletCard }) {
   const spentShare = limit > 0 ? Math.min(1, Math.max(0, spent / limit)) : 0;
 
   // Oldest first, running total after each purchase.
-  const chronological = [...purchases].reverse();
+  const chronological = [...transactions].reverse();
   const totals: number[] = [];
-  chronological.reduce((sum, p) => (totals.push(sum + p.totalCents), sum + p.totalCents), 0);
-  const last = purchases[0]?.totalCents;
-  const prev = purchases[1]?.totalCents;
+  chronological.reduce((sum, p) => (totals.push(sum + p.amountCents), sum + p.amountCents), 0);
+  const last = transactions[0]?.amountCents;
+  const prev = transactions[1]?.amountCents;
   const change = last !== undefined && prev ? ((last - prev) / prev) * 100 : null;
 
   return (

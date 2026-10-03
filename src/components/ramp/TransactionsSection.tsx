@@ -2,9 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { productsById } from "@/lib/catalog";
-import { isProductImageAsset } from "@/lib/store/product-assets";
-import { usePurchases, type Purchase } from "@/lib/store/purchases";
+import type { HomeTransaction } from "@/lib/ramp/types";
 import { EmptyPurchases } from "./EmptyPurchases";
 import { Sheet } from "@/components/ui/Sheet";
 import { markSheetOpened } from "@/lib/use-sheet-param";
@@ -29,41 +27,35 @@ function ago(at: number) {
   return `${days} day${days === 1 ? "" : "s"} ago`;
 }
 
-function describe(purchase: Purchase) {
-  const names = purchase.lines
-    .map((line) => productsById.get(line.productId)?.name)
-    .filter((name): name is string => Boolean(name));
-  if (names.length === 0) return "Store order";
-  return names.length > 1 ? `${names[0]} +${names.length - 1} more` : names[0];
-}
+/** Stand-in art per market area, so each row's avatar reflects where the money went. */
+const VENDOR_ART: Record<string, string> = { aisle: "granola", fruits: "strawberry", fridge: "yogurt" };
+const artFor = (merchant: string) => `/store/products/${VENDOR_ART[merchant.toLowerCase()] ?? "blueberry"}.svg`;
 
-/** Art for the first item bought, so the avatar matches the purchase. */
-function artFor(purchase: Purchase) {
-  const file = `${purchase.lines[0]?.productId}.svg`;
-  return isProductImageAsset(file) ? `/store/products/${file}` : "/store/products/blueberry.svg";
-}
-
-function Row({ purchase, who, program }: { purchase: Purchase; who: string; program: string }) {
-  return (
-    <li className="rampTxRow">
+function Row({ transaction, who, program }: { transaction: HomeTransaction; who: string; program: string }) {
+  const content = (
+    <>
       <div>
-        <p className="rampTxMain">{dollars(purchase.totalCents)} for {describe(purchase)}</p>
-        <p className="rampTxSub">{ago(purchase.at)}</p>
+        <p className="rampTxMain">{dollars(transaction.amountCents)} at {transaction.merchantName}</p>
+        <p className="rampTxSub">{ago(transaction.at)}</p>
       </div>
       <div>
         <p className="rampTxMain">{who}</p>
         <p className="rampTxSub rampTxSub--strong">{program}</p>
       </div>
       <span className="rampTxAvatar">
-        <img className="rampTxAvatarArt" src={artFor(purchase)} alt="" aria-hidden />
+        <img className="rampTxAvatarArt" src={artFor(transaction.merchantName)} alt="" aria-hidden />
         <span className="rampTxBadge"><img src="/ramp/icons/shield-check.svg" alt="" aria-hidden /></span>
       </span>
+    </>
+  );
+  return (
+    <li>
+      {transaction.orderId ? <Link href={`/invoices/${transaction.orderId}`} className="rampTxRow">{content}</Link> : <div className="rampTxRow">{content}</div>}
     </li>
   );
 }
 
-export function TransactionsSection({ who, program }: { who: string; program: string }) {
-  const purchases = usePurchases();
+export function TransactionsSection({ transactions, who, program }: { transactions: HomeTransaction[]; who: string; program: string }) {
   const [policyOpen, setPolicyOpen] = useState(false);
 
   return (
@@ -82,12 +74,12 @@ export function TransactionsSection({ who, program }: { who: string; program: st
         </div>
       </div>
 
-      {purchases.length === 0 ? (
+      {transactions.length === 0 ? (
         <EmptyPurchases className="rampEmpty--tx" />
       ) : (
         <ul className="rampTxList">
-          {purchases.map((purchase) => (
-            <Row key={purchase.id} purchase={purchase} who={who} program={program} />
+          {transactions.map((transaction) => (
+            <Row key={transaction.id} transaction={transaction} who={who} program={program} />
           ))}
         </ul>
       )}

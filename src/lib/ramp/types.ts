@@ -214,3 +214,14 @@ export type ExpenseDetail = {
   sections: ExpenseSection[];
   activity: TimelineEvent[];
 };
+
+/** A posted card transaction on the Ramp home page, newest first. */
+export type HomeTransaction = {
+  id: string;
+  merchantName: string;
+  amountCents: number;
+  /** Epoch milliseconds. */
+  at: number;
+  /** Set when the transaction is a store order, so the row can open its invoice. */
+  orderId: string | null;
+};

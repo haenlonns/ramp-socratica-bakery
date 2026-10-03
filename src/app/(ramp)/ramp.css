@@ -1754,6 +1754,8 @@ button.rampCardRow, a.rampCardRow { cursor: pointer; }
   background: var(--ramp-white);
   border: 1px solid var(--ramp-line-strong);
 }
+.rampTxRow { color: inherit; text-decoration: none; }
+a.rampTxRow:hover { background: var(--ramp-grey-98); }
 .rampTxRow > div:nth-child(2) { padding-left: 8px; }
 .rampTxMain { margin: 0; font-size: 15.3px; font-weight: 300; line-height: 24px; color: var(--ramp-grey-10); }
 .rampTxSub { margin: 0; font-size: 13.3px; font-weight: 300; line-height: 20px; color: var(--ramp-grey-42); }
